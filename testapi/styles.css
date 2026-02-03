@@ -1,0 +1,102 @@
+:root {
+  color-scheme: light;
+  font-family: "IBM Plex Sans", "SF Pro Text", "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #f3f3f0, #e8efe8);
+  color: #1c1c1c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 32px 20px 60px;
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+}
+
+header h1 {
+  margin: 0 0 6px;
+  font-size: 30px;
+}
+
+header p {
+  margin: 0;
+  color: #4b4b4b;
+}
+
+.card {
+  background: #ffffffc2;
+  border: 1px solid #dadfda;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(21, 45, 28, 0.08);
+  backdrop-filter: blur(6px);
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  color: #3d3d3d;
+  margin: 12px 0 8px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #cfd6cf;
+  font-family: "IBM Plex Mono", "SF Mono", monospace;
+  font-size: 14px;
+  background: #fff;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+button {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #1f5b3a;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1a4c31;
+}
+
+.pill {
+  background: #eef3ee;
+  border: 1px solid #d5dfd4;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+pre {
+  margin: 0;
+  padding: 12px;
+  background: #0e1a12;
+  color: #dfe9df;
+  border-radius: 12px;
+  overflow-x: auto;
+  min-height: 120px;
+}

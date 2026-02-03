@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ASES API Tester</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>ASES API Tester</h1>
+        <p>Use this page to test auth, onboarding, and admin endpoints.</p>
+      </header>
+
+      <section class="card">
+        <h2>Configuration</h2>
+        <label>
+          API Base URL
+          <input id="apiBase" type="text" value="http://localhost:3001" />
+        </label>
+        <div class="row">
+          <button id="setApiBase">Set API Base</button>
+          <button id="getCsrf">Get CSRF Token</button>
+        </div>
+        <div class="row">
+          <div class="pill">CSRF: <span id="csrfToken">none</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Auth</h2>
+        <div class="row">
+          <button id="login">Login with Google</button>
+          <button id="getSession">Get Session</button>
+          <button id="getMe">Get /me</button>
+          <button id="logout">Logout</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Onboarding</h2>
+        <div class="row">
+          <button id="getOnboarding">Get Onboarding</button>
+          <button id="submitOnboarding">Submit Onboarding</button>
+        </div>
+        <label>
+          Answers JSON
+          <textarea id="onboardingPayload" rows="6">
+{
+  "year": "Sophomore",
+  "major": "CS",
+  "interests": ["AI", "Startups"]
+}
+          </textarea>
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>Whitelist</h2>
+        <div class="row">
+          <button id="listWhitelist">List Whitelist</button>
+        </div>
+        <label>
+          Add Email
+          <input id="whitelistEmail" type="email" placeholder="user@example.com" />
+        </label>
+        <div class="row">
+          <button id="addWhitelist">Add Email</button>
+        </div>
+        <label>
+          Import Emails (one per line)
+          <textarea id="whitelistImport" rows="5"></textarea>
+        </label>
+        <div class="row">
+          <button id="importWhitelist">Import Emails</button>
+        </div>
+        <label>
+          Delete Whitelist Entry ID
+          <input id="whitelistDeleteId" type="text" placeholder="uuid" />
+        </label>
+        <div class="row">
+          <button id="deleteWhitelist">Delete Entry</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Admin</h2>
+        <div class="row">
+          <button id="listUsers">List Users</button>
+        </div>
+        <label>
+          Reset Onboarding (User ID)
+          <input id="resetUserId" type="text" placeholder="uuid" />
+        </label>
+        <div class="row">
+          <button id="resetOnboarding">Reset Onboarding</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Response Log</h2>
+        <pre id="log"></pre>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
