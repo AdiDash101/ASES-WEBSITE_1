@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String              @id @default(uuid())
+  googleId              String              @unique
+  email                 String              @unique
+  name                  String
+  avatarUrl             String?
+  role                  UserRole            @default(MEMBER)
+  onboardingCompletedAt DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  whitelistEntries      WhitelistEntry[]    @relation("WhitelistAddedBy")
+  onboardingResponse    OnboardingResponse?
+}
+
+model WhitelistEntry {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  addedByUserId String
+  createdAt     DateTime @default(now())
+
+  addedBy       User     @relation("WhitelistAddedBy", fields: [addedByUserId], references: [id])
+}
+
+model OnboardingResponse {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  answersJson Json
+  submittedAt DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+enum UserRole {
+  MEMBER
+  ADMIN
+}
