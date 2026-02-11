@@ -39,18 +39,9 @@ const run = async () => {
       });
       console.log(`Promoted user to admin: ${email}`);
     }
-
-    await prisma.whitelistEntry.upsert({
-      where: { email },
-      update: {},
-      create: {
-        email,
-        addedByUserId: user.id,
-      },
-    });
   }
 
-  console.log("Seed complete.");
+  console.log("Seed complete: admin users ensured.");
 };
 
 run()

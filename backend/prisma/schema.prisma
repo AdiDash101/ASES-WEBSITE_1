@@ -18,17 +18,10 @@ model User {
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
 
-  whitelistEntries      WhitelistEntry[]    @relation("WhitelistAddedBy")
   onboardingResponse    OnboardingResponse?
-}
-
-model WhitelistEntry {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  addedByUserId String
-  createdAt     DateTime @default(now())
-
-  addedBy       User     @relation("WhitelistAddedBy", fields: [addedByUserId], references: [id])
+  application           Application?        @relation("UserApplication")
+  paymentVerifications  Application[]       @relation("ApplicationPaymentVerifiedBy")
+  applicationReviews    Application[]       @relation("ApplicationReviewedBy")
 }
 
 model OnboardingResponse {
@@ -40,7 +33,35 @@ model OnboardingResponse {
   user        User     @relation(fields: [userId], references: [id])
 }
 
+model Application {
+  id                     String            @id @default(uuid())
+  userId                 String            @unique
+  answersJson            Json
+  status                 ApplicationStatus @default(DRAFT)
+  paymentProofKey        String?
+  paymentProofUploadedAt DateTime?
+  paymentVerifiedAt      DateTime?
+  paymentVerifiedByUserId String?
+  submittedAt            DateTime          @default(now())
+  reviewedAt             DateTime?
+  reviewedByUserId       String?
+  decisionNote           String?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  user                   User              @relation("UserApplication", fields: [userId], references: [id])
+  paymentVerifiedBy      User?             @relation("ApplicationPaymentVerifiedBy", fields: [paymentVerifiedByUserId], references: [id])
+  reviewedBy             User?             @relation("ApplicationReviewedBy", fields: [reviewedByUserId], references: [id])
+}
+
 enum UserRole {
   MEMBER
   ADMIN
+}
+
+enum ApplicationStatus {
+  DRAFT
+  PENDING
+  ACCEPTED
+  REJECTED
 }

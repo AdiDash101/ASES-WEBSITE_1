@@ -244,3 +244,132 @@ onboarding_responses
 2. Applicant review panel with accept or deny.
 3. Automated acceptance emails.
 4. Internship hub built on onboarding data.
+
+## Applications module (phase 2 draft)
+### Locked decisions (2026-02-11)
+1. Whitelist access gating is removed; any Google user can log in.
+2. Membership access is granted by application acceptance (acceptance is the new "whitelist").
+3. Payment verification is manual and admin-scoped.
+4. Admin decision note is optional.
+5. Payment proof uploads use MinIO (S3-compatible object storage).
+6. Rejected applicants can reapply in the same cycle.
+7. Payment proof supports image files only (`image/jpeg`, `image/png`, `image/webp`) with max file size 10 MB.
+
+### Core problem
+Logged-in users who are not yet members need one clear path to apply to ASES and track their application status.
+
+### Success criteria
+1. 100% of logged-in non-members are routed to either application form or application status.
+2. 95%+ of submitted applications persist successfully on first submit.
+3. 100% of accepted and onboarded members are routed directly to the member portal.
+4. Application status is visible to applicants without admin support.
+
+### In scope (phase 2 MVP)
+1. Google OAuth login remains the only sign-in method.
+2. Any non-admin user can sign in without pre-approval.
+3. One active application record per user for the active cycle.
+4. Applicant can submit and view current status.
+5. Applicant can reapply only when current status is `REJECTED`.
+6. Applicant uploads proof of payment image to MinIO.
+7. Admin-scoped review queue for applicants and payment proof verification.
+8. Application status states: `PENDING`, `ACCEPTED`, `REJECTED`.
+9. Routing logic after login based on application status and onboarding completion.
+10. Minimal admin API to verify payment and set final decision.
+
+### Explicitly out of scope (phase 2 MVP)
+1. Automated payments, refunds, or billing integrations.
+2. Cross-cycle application history and reapply flows.
+3. Applicant scoring, comments, rubrics, or reviewer assignment.
+4. Automated decision emails or notification workflows.
+5. OCR or fraud detection on payment proof files.
+6. Public applicant profiles or member directory.
+
+### User states and routing
+1. Logged in + `ACCEPTED` + `onboardingCompletedAt` present: route to member portal.
+2. Logged in + `ACCEPTED` + `onboardingCompletedAt` missing: route to onboarding.
+3. Logged in + `PENDING`: route to application status page.
+4. Logged in + no application record: route to application form.
+5. Logged in + `REJECTED`: route to rejected status page with next-step instructions.
+
+### Functional requirements (phase 2 MVP)
+1. Remove whitelist checks from standard OAuth login.
+2. Keep admin authorization (`role = ADMIN`) for admin endpoints.
+3. Allow one active application record per user.
+4. Allow reapply only if current application status is `REJECTED`; reapply sets status back to `PENDING`.
+5. Prevent edits while status is `PENDING` or `ACCEPTED`.
+6. Generate MinIO S3-compatible pre-signed upload URLs for payment proof uploads.
+7. Enforce payment proof MIME and size limits at upload URL issuance.
+8. Store MinIO object key and upload metadata on application record.
+9. Return application status in a single authenticated endpoint.
+10. Restrict onboarding submission to users with accepted applications.
+11. Provide admin endpoint to mark payment as verified.
+12. Provide admin endpoint to mark applications accepted or rejected.
+13. Keep `decision_note` optional on admin decision.
+
+### Data model additions (phase 2)
+applications
+- id (uuid, pk)
+- user_id (uuid, fk to users, unique)
+- answers_json (jsonb)
+- status (enum: pending, accepted, rejected)
+- payment_proof_key (string, nullable)
+- payment_proof_uploaded_at (timestamp, nullable)
+- payment_verified_at (timestamp, nullable)
+- payment_verified_by_user_id (uuid, fk to users, nullable)
+- submitted_at (timestamp)
+- reviewed_at (timestamp, nullable)
+- reviewed_by_user_id (uuid, fk to users, nullable)
+- decision_note (text, nullable)
+- created_at (timestamp)
+- updated_at (timestamp)
+
+### Data integrity rules (phase 2)
+1. `applications.user_id` is unique for MVP one-active-record-per-user policy.
+2. `applications.status` must be one of `PENDING`, `ACCEPTED`, `REJECTED`.
+3. `payment_verified_by_user_id` and `reviewed_by_user_id` must reference admin users.
+4. `decision_note` is optional and nullable.
+5. Reapply is allowed only from `REJECTED` and transitions to `PENDING`.
+6. Onboarding submit must fail if application status is not `ACCEPTED`.
+7. Member portal access must fail if application status is not `ACCEPTED`.
+
+### API endpoints (phase 2 draft)
+1. `GET /application` get current user's application status and metadata.
+2. `POST /application` submit application answers for current user.
+3. `POST /application/reapply` resubmit rejected application and set status to `PENDING`.
+4. `POST /application/payment-proof/upload-url` issue MinIO pre-signed upload URL.
+5. `GET /admin/applications` list applications for review.
+6. `POST /admin/applications/:id/payment-verify` mark payment proof verified.
+7. `POST /admin/applications/:id/decision` set `ACCEPTED` or `REJECTED`.
+
+### Permissions and access control (phase 2)
+1. Applicants can read only their own application.
+2. Applicants can create only one active application record; reapply is only allowed when rejected.
+3. Only admins can list applications, verify payments, and set decisions.
+4. Member portal access requires accepted application and completed onboarding.
+5. Login is open to all Google accounts; application status controls membership access.
+
+### Acceptance criteria (phase 2 MVP)
+1. Any Google user can log in successfully without whitelist checks.
+2. New logged-in user sees application form if no application exists.
+3. User with pending application sees pending status and cannot access member portal.
+4. Rejected user can reapply in the same cycle, and status returns to pending.
+5. Applicant can upload payment proof image to MinIO and see upload status.
+6. Admin can view applicants, manually verify payment proof, and set accepted or rejected.
+7. Accepted and onboarded user lands in member portal.
+8. Accepted but not onboarded user is routed to onboarding.
+9. Rejected user sees rejection status and cannot access member portal until accepted.
+
+### Milestones (phase 2)
+1. M1: requirements finalization and application question schema (1 to 2 days)
+2. M2: Prisma migration and MinIO upload integration (2 to 3 days)
+3. M3: applicant UI flow and login routing logic (2 to 4 days)
+4. M4: admin payment verification + decision flow and QA (1 to 2 days)
+
+### Risks (phase 2)
+1. Migrating from whitelist-first auth can regress existing login flow.
+2. MinIO bucket policy or pre-signed upload misconfiguration can block payment proof uploads.
+3. Manual payment verification can become an operational bottleneck during peaks.
+4. Onboarding gating rules can regress existing member flow if not tested.
+
+### Open questions (phase 2)
+1. None currently. Final application question set is locked from `docs/app questions` (resolved on 2026-02-11).

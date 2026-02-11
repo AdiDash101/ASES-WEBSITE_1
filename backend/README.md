@@ -7,7 +7,7 @@
 4. Install dependencies: `bun install`
 5. Generate Prisma client: `bun run prisma:generate`
 6. Run migrations: `bun run prisma:migrate`
-7. Seed admins/whitelist: `bun run prisma:seed`
+7. Seed admins: `bun run prisma:seed`
 8. Start dev server: `bun run dev`
 9. Typecheck (optional): `bun run typecheck`
 
@@ -19,6 +19,13 @@
 5. `GOOGLE_CLIENT_SECRET` Google OAuth client secret.
 6. `GOOGLE_CALLBACK_URL` must match Google redirect URI.
 7. `ADMIN_EMAILS` comma-separated list for initial admins.
+8. `MINIO_ENDPOINT` MinIO endpoint URL (for example `http://localhost:9000`).
+9. `MINIO_REGION` object storage region (for example `us-east-1`).
+10. `MINIO_ACCESS_KEY` MinIO access key.
+11. `MINIO_SECRET_KEY` MinIO secret key.
+12. `MINIO_BUCKET` bucket name for payment proof uploads.
+13. `MINIO_FORCE_PATH_STYLE` set `true` for MinIO compatibility.
+14. `MINIO_SIGNED_URL_TTL_SECONDS` upload URL TTL in seconds.
 
 ## Google OAuth setup
 1. In Google Cloud Console, create OAuth credentials for a Web application.
@@ -46,17 +53,22 @@
 - `GET /auth/session`
 - `POST /auth/logout`
 - `GET /me`
+- `GET /application`
+- `POST /application/start`
+- `POST /application`
+- `POST /application/reapply`
+- `POST /application/payment-proof/upload-url`
 - `GET /onboarding`
 - `POST /onboarding`
-- `GET /admin/whitelist`
-- `POST /admin/whitelist`
-- `DELETE /admin/whitelist/:id`
-- `POST /admin/whitelist/import`
 - `GET /admin/users`
+- `GET /admin/applications`
+- `POST /admin/applications/:id/payment-verify`
+- `POST /admin/applications/:id/decision`
 - `POST /admin/onboarding/reset/:userId`
 
 ## Notes
-- Set `ADMIN_EMAILS` to bootstrap the first admin when the whitelist is empty.
+- Any Google user can log in; access to member-only flows is controlled by application status.
+- `ADMIN_EMAILS` allows admin role auto-assignment during login.
 - CSRF tokens are required for POST/DELETE requests. Fetch a token from
   `GET /auth/csrf` and send it in the `x-csrf-token` header.
 - Sessions are stored in Postgres via `connect-pg-simple` and will create a

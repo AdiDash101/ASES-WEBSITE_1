@@ -17,26 +17,32 @@ router.get("/google", (req: Request, res: Response, next: NextFunction) => {
 router.get(
   "/google/callback",
   (req: Request, res: Response, next: NextFunction) => {
-    passport.authenticate("google", (err, user, info) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        const reason = info?.message ?? "auth_failed";
-        const status = reason === "not_whitelisted" ? 403 : 401;
-        return next(
-          new HttpError(status, reason, "Authentication failed.", {
-            reason,
-          })
-        );
-      }
-      req.logIn?.(user, (loginErr) => {
-        if (loginErr) {
-          return next(loginErr);
+    passport.authenticate(
+      "google",
+      (
+        err: unknown,
+        user: Express.User | false | null,
+        info: { message?: string } | undefined
+      ) => {
+        if (err) {
+          return next(err);
         }
-        return res.redirect(env.APP_ORIGIN);
-      });
-    })(req, res, next);
+        if (!user) {
+          const reason = info?.message ?? "auth_failed";
+          return next(
+            new HttpError(401, reason, "Authentication failed.", {
+              reason,
+            })
+          );
+        }
+        req.logIn?.(user, (loginErr) => {
+          if (loginErr) {
+            return next(loginErr);
+          }
+          return res.redirect(env.APP_ORIGIN);
+        });
+      }
+    )(req, res, next);
   }
 );
 

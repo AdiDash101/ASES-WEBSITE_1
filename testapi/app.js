@@ -12,6 +12,10 @@ const log = (label, payload) => {
   logEl.textContent = entry + logEl.textContent;
 };
 
+const clearLog = () => {
+  el("log").textContent = "";
+};
+
 const setApiBase = () => {
   state.apiBase = el("apiBase").value.trim().replace(/\/$/, "");
   log("config", { apiBase: state.apiBase });
@@ -76,35 +80,103 @@ const submitOnboarding = () => {
   return request("/onboarding", { method: "POST", body });
 };
 
-const listWhitelist = () => request("/admin/whitelist");
+const getApplication = () => request("/application");
+const startApplication = () => request("/application/start", { method: "POST" });
 
-const addWhitelist = () => {
-  const email = el("whitelistEmail").value.trim();
-  return request("/admin/whitelist", { method: "POST", body: { email } });
+const submitApplication = () => {
+  const raw = el("applicationPayload").value.trim();
+  let body;
+  try {
+    body = { answers: JSON.parse(raw) };
+  } catch (error) {
+    log("application payload error", { error: String(error) });
+    return;
+  }
+  return request("/application", { method: "POST", body });
 };
 
-const importWhitelist = () => {
-  const raw = el("whitelistImport").value;
-  const emails = raw
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-  return request("/admin/whitelist/import", {
+const reapplyApplication = () => {
+  const raw = el("applicationPayload").value.trim();
+  let body;
+  try {
+    body = { answers: JSON.parse(raw) };
+  } catch (error) {
+    log("reapply payload error", { error: String(error) });
+    return;
+  }
+  return request("/application/reapply", { method: "POST", body });
+};
+
+const uploadPaymentProof = async () => {
+  const fileInput = el("paymentProofFile");
+  const file = fileInput?.files?.[0];
+  if (!file) {
+    log("upload payment proof", {
+      error: "Select an image file first.",
+    });
+    return;
+  }
+
+  const signed = await request("/application/payment-proof/upload-url", {
     method: "POST",
-    body: { emails },
+    body: {
+      contentType: file.type,
+      contentLength: file.size,
+    },
+  });
+
+  const uploadUrl = signed?.data?.uploadUrl;
+  if (!uploadUrl) {
+    log("upload payment proof", {
+      error: "Missing upload URL from API response.",
+      signed,
+    });
+    return;
+  }
+
+  const uploadResp = await fetch(uploadUrl, {
+    method: "PUT",
+    headers: {
+      "Content-Type": file.type,
+    },
+    body: file,
+  });
+
+  const uploadBody = await uploadResp.text();
+  log(`PUT signed-url (${uploadResp.status})`, {
+    ok: uploadResp.ok,
+    response: uploadBody || null,
   });
 };
 
-const deleteWhitelist = () => {
-  const id = el("whitelistDeleteId").value.trim();
+const listUsers = () => request("/admin/users");
+const listApplications = () => request("/admin/applications");
+
+const verifyPayment = () => {
+  const id = el("verifyApplicationId").value.trim();
   if (!id) {
-    log("delete whitelist", { error: "Missing entry id" });
+    log("verify payment", { error: "Missing application id" });
     return;
   }
-  return request(`/admin/whitelist/${id}`, { method: "DELETE" });
+  return request(`/admin/applications/${id}/payment-verify`, { method: "POST" });
 };
 
-const listUsers = () => request("/admin/users");
+const decideApplication = () => {
+  const id = el("decisionApplicationId").value.trim();
+  if (!id) {
+    log("decision", { error: "Missing application id" });
+    return;
+  }
+  const status = el("decisionStatus").value;
+  const decisionNote = el("decisionNote").value.trim();
+  return request(`/admin/applications/${id}/decision`, {
+    method: "POST",
+    body: {
+      status,
+      decisionNote: decisionNote || null,
+    },
+  });
+};
 
 const resetOnboarding = () => {
   const userId = el("resetUserId").value.trim();
@@ -117,17 +189,22 @@ const resetOnboarding = () => {
 
 el("setApiBase").addEventListener("click", setApiBase);
 el("getCsrf").addEventListener("click", getCsrf);
+el("clearLog").addEventListener("click", clearLog);
 el("login").addEventListener("click", login);
 el("getSession").addEventListener("click", getSession);
 el("getMe").addEventListener("click", getMe);
 el("logout").addEventListener("click", logout);
 el("getOnboarding").addEventListener("click", getOnboarding);
 el("submitOnboarding").addEventListener("click", submitOnboarding);
-el("listWhitelist").addEventListener("click", listWhitelist);
-el("addWhitelist").addEventListener("click", addWhitelist);
-el("importWhitelist").addEventListener("click", importWhitelist);
-el("deleteWhitelist").addEventListener("click", deleteWhitelist);
+el("getApplication").addEventListener("click", getApplication);
+el("startApplication").addEventListener("click", startApplication);
+el("submitApplication").addEventListener("click", submitApplication);
+el("reapplyApplication").addEventListener("click", reapplyApplication);
+el("uploadPaymentProof").addEventListener("click", uploadPaymentProof);
 el("listUsers").addEventListener("click", listUsers);
+el("listApplications").addEventListener("click", listApplications);
+el("verifyPayment").addEventListener("click", verifyPayment);
+el("decideApplication").addEventListener("click", decideApplication);
 el("resetOnboarding").addEventListener("click", resetOnboarding);
 
 setApiBase();

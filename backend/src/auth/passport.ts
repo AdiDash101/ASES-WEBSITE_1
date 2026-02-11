@@ -1,5 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile as GoogleProfile } from "passport-google-oauth20";
+import { UserRole } from "@prisma/client";
 import prisma from "../db/prisma";
 import { env } from "../config/env";
 
@@ -32,22 +33,12 @@ export const configurePassport = () => {
             return done(null, false, { message: "missing_email" });
           }
 
-          const whitelistCount = await prisma.whitelistEntry.count();
-          const isBootstrapAdmin =
-            whitelistCount === 0 && env.ADMIN_EMAILS.includes(email);
-
-          const whitelistEntry = await prisma.whitelistEntry.findUnique({
-            where: { email },
-          });
-
-          if (!whitelistEntry && !isBootstrapAdmin) {
-            return done(null, false, { message: "not_whitelisted" });
-          }
+          const isAdminEmail = env.ADMIN_EMAILS.includes(email);
 
           const displayName = profile.displayName || email;
           const avatarUrl = profile.photos?.[0]?.value ?? null;
 
-          const roleUpdate = isBootstrapAdmin ? { role: "ADMIN" } : {};
+          const roleUpdate = isAdminEmail ? { role: UserRole.ADMIN } : {};
 
           let user = await prisma.user.findUnique({ where: { email } });
           if (!user) {
@@ -74,16 +65,7 @@ export const configurePassport = () => {
                 email,
                 name: displayName,
                 avatarUrl,
-                role: isBootstrapAdmin ? "ADMIN" : "MEMBER",
-              },
-            });
-          }
-
-          if (!whitelistEntry && isBootstrapAdmin) {
-            await prisma.whitelistEntry.create({
-              data: {
-                email,
-                addedByUserId: user.id,
+                role: isAdminEmail ? UserRole.ADMIN : UserRole.MEMBER,
               },
             });
           }

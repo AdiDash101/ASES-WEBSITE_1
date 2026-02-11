@@ -5,75 +5,19 @@ import { requireAdmin } from "../middleware/requireAdmin";
 import { asyncHandler } from "../utils/asyncHandler";
 import { validateBody, validateParams } from "../middleware/validate";
 import {
+  applicationDecisionSchema,
   userIdParamSchema,
   uuidParamSchema,
-  whitelistCreateSchema,
-  whitelistImportSchema,
 } from "../validation/schemas";
 import { HttpError } from "../utils/httpError";
+import {
+  createPaymentProofViewUrl,
+  paymentProofObjectExists,
+} from "../storage/minio";
 
 const router = Router();
 
 router.use(requireAdmin);
-
-router.get(
-  "/whitelist",
-  asyncHandler(async (_req: Request, res: Response) => {
-    const entries = await prisma.whitelistEntry.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-    res.status(200).json({ data: entries });
-  })
-);
-
-router.post(
-  "/whitelist",
-  validateBody(whitelistCreateSchema),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { email } = req.body;
-    try {
-      const entry = await prisma.whitelistEntry.create({
-        data: {
-          email,
-          addedByUserId: req.user!.id,
-        },
-      });
-      return res.status(201).json({ data: entry });
-    } catch (error: any) {
-      if (error?.code === "P2002") {
-        throw new HttpError(409, "duplicate", "Email already whitelisted.");
-      }
-      throw error;
-    }
-  })
-);
-
-router.delete(
-  "/whitelist/:id",
-  validateParams(uuidParamSchema),
-  asyncHandler(async (req: Request, res: Response) => {
-    await prisma.whitelistEntry.delete({ where: { id: req.params.id } });
-    res.status(204).send();
-  })
-);
-
-router.post(
-  "/whitelist/import",
-  validateBody(whitelistImportSchema),
-  asyncHandler(async (req: Request, res: Response) => {
-    const cleaned = Array.from(new Set(req.body.emails));
-
-    const created = await prisma.whitelistEntry.createMany({
-      data: cleaned.map((email) => ({
-        email,
-        addedByUserId: req.user!.id,
-      })),
-      skipDuplicates: true,
-    });
-
-    res.status(201).json({ added: created.count });
-  })
-);
 
 router.get(
   "/users",
@@ -87,9 +31,199 @@ router.get(
         role: true,
         onboardingCompletedAt: true,
         createdAt: true,
+        application: {
+          select: {
+            status: true,
+            submittedAt: true,
+            paymentVerifiedAt: true,
+          },
+        },
       },
     });
     res.status(200).json({ data: users });
+  })
+);
+
+router.get(
+  "/applications",
+  asyncHandler(async (_req: Request, res: Response) => {
+    const applications = await prisma.application.findMany({
+      where: {
+        status: {
+          not: "DRAFT",
+        },
+      },
+      orderBy: { submittedAt: "desc" },
+      select: {
+        id: true,
+        status: true,
+        submittedAt: true,
+        paymentProofKey: true,
+        paymentProofUploadedAt: true,
+        paymentVerifiedAt: true,
+        reviewedAt: true,
+        decisionNote: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            onboardingCompletedAt: true,
+          },
+        },
+      },
+    });
+
+    const data = await Promise.all(
+      applications.map(async (application) => {
+        let paymentProofViewUrl: string | null = null;
+
+        if (application.paymentProofKey) {
+          try {
+            paymentProofViewUrl = await createPaymentProofViewUrl(
+              application.paymentProofKey
+            );
+          } catch {
+            paymentProofViewUrl = null;
+          }
+        }
+
+        return {
+          ...application,
+          paymentProofViewUrl,
+        };
+      })
+    );
+
+    res.status(200).json({ data });
+  })
+);
+
+router.post(
+  "/applications/:id/payment-verify",
+  validateParams(uuidParamSchema),
+  asyncHandler(async (req: Request, res: Response) => {
+    const application = await prisma.application.findUnique({
+      where: { id: req.params.id },
+      select: {
+        id: true,
+        status: true,
+        paymentProofKey: true,
+      },
+    });
+
+    if (!application) {
+      throw new HttpError(404, "application_not_found", "Application not found.");
+    }
+
+    if (!application.paymentProofKey) {
+      throw new HttpError(
+        409,
+        "payment_proof_missing",
+        "Payment proof must be uploaded before verification."
+      );
+    }
+
+    if (application.status === "DRAFT") {
+      throw new HttpError(
+        409,
+        "application_not_submitted",
+        "Application must be submitted before payment verification."
+      );
+    }
+
+    let exists = false;
+    try {
+      exists = await paymentProofObjectExists(application.paymentProofKey);
+    } catch (error) {
+      throw new HttpError(
+        500,
+        "storage_unavailable",
+        "Payment proof storage is unavailable.",
+        { error: error instanceof Error ? error.message : "unknown_error" }
+      );
+    }
+    if (!exists) {
+      throw new HttpError(
+        409,
+        "payment_proof_not_found",
+        "Payment proof file was not found in object storage."
+      );
+    }
+
+    const now = new Date();
+    const updated = await prisma.application.update({
+      where: { id: application.id },
+      data: {
+        paymentVerifiedAt: now,
+        paymentVerifiedByUserId: req.user!.id,
+      },
+      select: {
+        id: true,
+        status: true,
+        paymentProofKey: true,
+        paymentVerifiedAt: true,
+        paymentVerifiedByUserId: true,
+      },
+    });
+
+    res.status(200).json({ data: updated });
+  })
+);
+
+router.post(
+  "/applications/:id/decision",
+  validateParams(uuidParamSchema),
+  validateBody(applicationDecisionSchema),
+  asyncHandler(async (req: Request, res: Response) => {
+    const application = await prisma.application.findUnique({
+      where: { id: req.params.id },
+      select: {
+        id: true,
+        status: true,
+        paymentVerifiedAt: true,
+      },
+    });
+
+    if (!application) {
+      throw new HttpError(404, "application_not_found", "Application not found.");
+    }
+
+    if (application.status === "DRAFT") {
+      throw new HttpError(
+        409,
+        "application_not_submitted",
+        "Application must be submitted before decision."
+      );
+    }
+
+    if (req.body.status === "ACCEPTED" && !application.paymentVerifiedAt) {
+      throw new HttpError(
+        409,
+        "payment_not_verified",
+        "Payment must be verified before accepting an application."
+      );
+    }
+
+    const now = new Date();
+    const updated = await prisma.application.update({
+      where: { id: application.id },
+      data: {
+        status: req.body.status,
+        reviewedAt: now,
+        reviewedByUserId: req.user!.id,
+        decisionNote: req.body.decisionNote ?? null,
+      },
+      select: {
+        id: true,
+        status: true,
+        reviewedAt: true,
+        reviewedByUserId: true,
+        decisionNote: true,
+      },
+    });
+
+    res.status(200).json({ data: updated });
   })
 );
 

@@ -10,6 +10,7 @@ import authRouter from "./routes/auth";
 import onboardingRouter from "./routes/onboarding";
 import adminRouter from "./routes/admin";
 import meRouter from "./routes/me";
+import applicationRouter from "./routes/application";
 import { notFound } from "./middleware/notFound";
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -43,6 +44,7 @@ app.use("/", healthRouter);
 app.use("/auth", authRouter);
 app.use("/me", meRouter);
 app.use("/onboarding", onboardingRouter);
+app.use("/application", applicationRouter);
 app.use("/admin", adminRouter);
 
 app.use(notFound);

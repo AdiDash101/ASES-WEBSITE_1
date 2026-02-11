@@ -11,9 +11,30 @@ const router = Router();
 
 router.use(requireAuth);
 
+const ensureOnboardingEligibility = async (userId: string, role: "MEMBER" | "ADMIN") => {
+  if (role === "ADMIN") {
+    return;
+  }
+
+  const application = await prisma.application.findUnique({
+    where: { userId },
+    select: { status: true },
+  });
+
+  if (!application || application.status !== "ACCEPTED") {
+    throw new HttpError(
+      403,
+      "membership_not_accepted",
+      "Onboarding is only available for accepted members."
+    );
+  }
+};
+
 router.get(
   "/",
   asyncHandler(async (req: Request, res: Response) => {
+    await ensureOnboardingEligibility(req.user!.id, req.user!.role);
+
     const response = await prisma.onboardingResponse.findUnique({
       where: { userId: req.user!.id },
     });
@@ -30,6 +51,8 @@ router.post(
   "/",
   validateBody(onboardingSchema),
   asyncHandler(async (req: Request, res: Response) => {
+    await ensureOnboardingEligibility(req.user!.id, req.user!.role);
+
     const existing = await prisma.onboardingResponse.findUnique({
       where: { userId: req.user!.id },
     });
@@ -56,7 +79,7 @@ router.post(
       }),
     ]);
 
-    return res.status(201).json({ ok: true });
+    res.status(201).json({ ok: true });
   })
 );
 

@@ -10,98 +10,156 @@
     <main>
       <header>
         <h1>ASES API Tester</h1>
-        <p>Use this page to test auth, onboarding, and admin endpoints.</p>
+        <p>Use this page to test auth, application, onboarding, and admin endpoints.</p>
       </header>
 
-      <section class="card">
-        <h2>Configuration</h2>
-        <label>
-          API Base URL
-          <input id="apiBase" type="text" value="http://localhost:3001" />
-        </label>
-        <div class="row">
-          <button id="setApiBase">Set API Base</button>
-          <button id="getCsrf">Get CSRF Token</button>
-        </div>
-        <div class="row">
-          <div class="pill">CSRF: <span id="csrfToken">none</span></div>
-        </div>
-      </section>
+      <div class="layout">
+        <div class="controls">
+          <section class="card">
+            <h2>Configuration</h2>
+            <label>
+              API Base URL
+              <input id="apiBase" type="text" value="http://localhost:3001" />
+            </label>
+            <div class="row">
+              <button id="setApiBase">Set API Base</button>
+              <button id="getCsrf">Get CSRF Token</button>
+            </div>
+            <div class="row">
+              <div class="pill">CSRF: <span id="csrfToken">none</span></div>
+            </div>
+          </section>
 
-      <section class="card">
-        <h2>Auth</h2>
-        <div class="row">
-          <button id="login">Login with Google</button>
-          <button id="getSession">Get Session</button>
-          <button id="getMe">Get /me</button>
-          <button id="logout">Logout</button>
-        </div>
-      </section>
+          <section class="card">
+            <h2>Auth</h2>
+            <div class="row">
+              <button id="login">Login with Google</button>
+              <button id="getSession">Get Session</button>
+              <button id="getMe">Get /me</button>
+              <button id="logout">Logout</button>
+            </div>
+          </section>
 
-      <section class="card">
-        <h2>Onboarding</h2>
-        <div class="row">
-          <button id="getOnboarding">Get Onboarding</button>
-          <button id="submitOnboarding">Submit Onboarding</button>
-        </div>
-        <label>
-          Answers JSON
-          <textarea id="onboardingPayload" rows="6">
+          <section class="card">
+            <h2>Onboarding</h2>
+            <div class="row">
+              <button id="getOnboarding">Get Onboarding</button>
+              <button id="submitOnboarding">Submit Onboarding</button>
+            </div>
+            <label>
+              Answers JSON
+              <textarea id="onboardingPayload" rows="6">
 {
   "year": "Sophomore",
   "major": "CS",
   "interests": ["AI", "Startups"]
 }
-          </textarea>
-        </label>
-      </section>
+              </textarea>
+            </label>
+          </section>
 
-      <section class="card">
-        <h2>Whitelist</h2>
-        <div class="row">
-          <button id="listWhitelist">List Whitelist</button>
-        </div>
-        <label>
-          Add Email
-          <input id="whitelistEmail" type="email" placeholder="user@example.com" />
-        </label>
-        <div class="row">
-          <button id="addWhitelist">Add Email</button>
-        </div>
-        <label>
-          Import Emails (one per line)
-          <textarea id="whitelistImport" rows="5"></textarea>
-        </label>
-        <div class="row">
-          <button id="importWhitelist">Import Emails</button>
-        </div>
-        <label>
-          Delete Whitelist Entry ID
-          <input id="whitelistDeleteId" type="text" placeholder="uuid" />
-        </label>
-        <div class="row">
-          <button id="deleteWhitelist">Delete Entry</button>
-        </div>
-      </section>
+          <section class="card">
+            <h2>Application</h2>
+            <p>
+              Flow: Start application -> Upload payment proof -> Submit application.
+              Submit is blocked until required fields and payment proof are complete.
+            </p>
+            <div class="row">
+              <button id="getApplication">Get Application</button>
+              <button id="startApplication">Start Application</button>
+              <button id="submitApplication">Submit Application</button>
+              <button id="reapplyApplication">Reapply</button>
+            </div>
+            <label>
+              Answers JSON
+              <textarea id="applicationPayload" rows="8">
+{
+  "email": "applicant@example.com",
+  "fullName": "Dela Cruz, Juan Santos",
+  "universityAndBranch": "University of the Philippines - Diliman",
+  "currentYearLevelAndProgram": "2nd Year - BS Computer Science",
+  "facebookLink": "https://www.facebook.com/juan.delacruz",
+  "resumeOrCv": "https://drive.google.com/file/d/example/view",
+  "linkedInLink": "https://www.linkedin.com/in/juandelacruz/",
+  "hobbiesAndInterests": "Hackathons, running, and startup podcasts.",
+  "personalWhy": "I want to create products that solve daily student problems.",
+  "currentBuildingOrWantToBuild": "I am building a student planner that reduces missed deadlines.",
+  "whyAsesManila": "I want to grow with people who are serious about building and leadership.",
+  "oneToTwoYearVision": "In two years, I want to launch a product with active users on campus.",
+  "fiveYearVision": "In five years, I want to lead a venture-backed company solving education access.",
+  "uniqueAboutYou": "I ship fast, test with users early, and document decisions clearly.",
+  "memberType": "NEW",
+  "universityType": "PUBLIC",
+  "amountPaid": 250,
+  "referenceNumber": "GCASH-1234567890"
+}
+              </textarea>
+            </label>
+            <label>
+              Payment Proof Image (jpg/png/webp, max 10MB)
+              <input
+                id="paymentProofFile"
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+              />
+            </label>
+            <div class="row">
+              <button id="uploadPaymentProof">Upload Payment Proof</button>
+            </div>
+          </section>
 
-      <section class="card">
-        <h2>Admin</h2>
-        <div class="row">
-          <button id="listUsers">List Users</button>
-        </div>
-        <label>
-          Reset Onboarding (User ID)
-          <input id="resetUserId" type="text" placeholder="uuid" />
-        </label>
-        <div class="row">
-          <button id="resetOnboarding">Reset Onboarding</button>
-        </div>
-      </section>
+          <section class="card">
+            <h2>Admin</h2>
+            <div class="row">
+              <button id="listUsers">List Users</button>
+              <button id="listApplications">List Applications</button>
+            </div>
 
-      <section class="card">
-        <h2>Response Log</h2>
-        <pre id="log"></pre>
-      </section>
+            <label>
+              Verify Payment (Application ID)
+              <input id="verifyApplicationId" type="text" placeholder="application uuid" />
+            </label>
+            <div class="row">
+              <button id="verifyPayment">Verify Payment</button>
+            </div>
+
+            <label>
+              Decision (Application ID)
+              <input id="decisionApplicationId" type="text" placeholder="application uuid" />
+            </label>
+            <label>
+              Decision Status
+              <select id="decisionStatus">
+                <option value="ACCEPTED">ACCEPTED</option>
+                <option value="REJECTED">REJECTED</option>
+              </select>
+            </label>
+            <label>
+              Decision Note (optional)
+              <textarea id="decisionNote" rows="3"></textarea>
+            </label>
+            <div class="row">
+              <button id="decideApplication">Submit Decision</button>
+            </div>
+
+            <label>
+              Reset Onboarding (User ID)
+              <input id="resetUserId" type="text" placeholder="uuid" />
+            </label>
+            <div class="row">
+              <button id="resetOnboarding">Reset Onboarding</button>
+            </div>
+          </section>
+        </div>
+
+        <aside class="card log-pane">
+          <div class="log-header">
+            <h2>Response Log</h2>
+            <button id="clearLog" class="ghost">Clear Log</button>
+          </div>
+          <pre id="log"></pre>
+        </aside>
+      </div>
     </main>
 
     <script type="module" src="/app.js"></script>
