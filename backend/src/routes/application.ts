@@ -30,6 +30,7 @@ router.get(
         id: true,
         status: true,
         answersJson: true,
+        updatedAt: true,
         submittedAt: true,
         reviewedAt: true,
         paymentProofKey: true,
@@ -167,6 +168,34 @@ router.post(
         answers: updated.answersJson,
       },
     });
+  })
+);
+
+router.delete(
+  "/draft",
+  asyncHandler(async (req: Request, res: Response) => {
+    const existing = await prisma.application.findUnique({
+      where: { userId: req.user!.id },
+      select: { id: true, status: true },
+    });
+
+    if (!existing) {
+      throw new HttpError(404, "application_not_found", "Application not found.");
+    }
+
+    if (existing.status !== "DRAFT") {
+      throw new HttpError(
+        409,
+        "draft_delete_not_allowed",
+        "Only in-progress drafts can be deleted."
+      );
+    }
+
+    await prisma.application.delete({
+      where: { id: existing.id },
+    });
+
+    res.status(204).send();
   })
 );
 

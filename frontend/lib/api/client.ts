@@ -124,6 +124,11 @@ export const saveApplicationDraft = (answers: Record<string, unknown>) =>
     body: JSON.stringify({ answers }),
   });
 
+export const deleteApplicationDraft = () =>
+  apiFetch<void>("/application/draft", {
+    method: "DELETE",
+  });
+
 export const requestPaymentProofUploadUrl = (
   contentType: string,
   contentLength: number

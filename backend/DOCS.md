@@ -38,16 +38,17 @@ Login is open to any Google account. Membership access is controlled by applicat
 ## Application and payment flow
 1. Applicant starts a draft through `POST /application/start`.
 2. Applicant can save partial answers through `POST /application/draft` while status is `DRAFT` or `REJECTED`.
-3. Applicant requests upload URL through `POST /application/payment-proof/upload-url`.
-4. API returns a MinIO pre-signed `PUT` URL plus required headers.
-5. Applicant submits answers through `POST /application`, which transitions status to `PENDING`.
-6. Submission is blocked until required answer keys are present and payment proof is uploaded.
-7. Required answer keys follow the finalized question set in `docs/app questions`.
-8. Admin lists applicants via `GET /admin/applications`.
-9. Admin fetches full answer payload via `GET /admin/applications/:id`.
-10. Admin verifies payment via `POST /admin/applications/:id/payment-verify`.
-11. Admin sets final decision via `POST /admin/applications/:id/decision`.
-12. Rejected applicants can resubmit via `POST /application/reapply`.
+3. Applicant can discard an in-progress draft via `DELETE /application/draft`.
+4. Applicant requests upload URL through `POST /application/payment-proof/upload-url`.
+5. API returns a MinIO pre-signed `PUT` URL plus required headers.
+6. Applicant submits answers through `POST /application`, which transitions status to `PENDING`.
+7. Submission is blocked until required answer keys are present and payment proof is uploaded.
+8. Required answer keys follow the finalized question set in `docs/app questions`.
+9. Admin lists applicants via `GET /admin/applications`.
+10. Admin fetches full answer payload via `GET /admin/applications/:id`.
+11. Admin verifies payment via `POST /admin/applications/:id/payment-verify`.
+12. Admin sets final decision via `POST /admin/applications/:id/decision`.
+13. Rejected applicants can resubmit via `POST /application/reapply`.
 
 ## Onboarding gate
 1. `GET /onboarding` and `POST /onboarding` require authentication.
@@ -71,17 +72,18 @@ Login is open to any Google account. Membership access is controlled by applicat
 9. `GET /application`
 10. `POST /application/start`
 11. `POST /application/draft`
-12. `POST /application`
-13. `POST /application/reapply`
-14. `POST /application/payment-proof/upload-url`
-15. `GET /onboarding`
-16. `POST /onboarding`
-17. `GET /admin/users`
-18. `GET /admin/applications`
-19. `GET /admin/applications/:id`
-20. `POST /admin/applications/:id/payment-verify`
-21. `POST /admin/applications/:id/decision`
-22. `POST /admin/onboarding/reset/:userId`
+12. `DELETE /application/draft`
+13. `POST /application`
+14. `POST /application/reapply`
+15. `POST /application/payment-proof/upload-url`
+16. `GET /onboarding`
+17. `POST /onboarding`
+18. `GET /admin/users`
+19. `GET /admin/applications`
+20. `GET /admin/applications/:id`
+21. `POST /admin/applications/:id/payment-verify`
+22. `POST /admin/applications/:id/decision`
+23. `POST /admin/onboarding/reset/:userId`
 
 ## Validation and error handling
 1. Request body and params are validated with Zod.

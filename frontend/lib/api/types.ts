@@ -19,6 +19,7 @@ export type SessionResponse = {
 export type ApplicationSummary = {
   id: string;
   status: ApplicationStatus;
+  updatedAt: string;
   submittedAt: string;
   reviewedAt: string | null;
   paymentProofKey: string | null;

@@ -1,104 +1,211 @@
+Here is a structured, text-based specification of the form. You can copy and paste this entire block into an LLM agent (like ChatGPT, Claude, or a specialized form-building agent) to regenerate the application form.
 
-Personal Details
-Description (optional)
+***
 
-Email
-*
-Please input your active email.
-Full Name (Last Name, First Name, Middle Name)
-*
-Example: Favila, Lynn Kelly Rapada
-University and Branch
-*
-Please do not abbreviate.
+**System Prompt / Instruction:**
+Please create a multi-section application form (Google Forms style) based on the following specifications. Ensure all descriptions, required fields, and specific instructions are included exactly as written.
 
-Example: University of the Philippines - Diliman
-Current Year Level and Program
-*
-Please do not abbreviate.
+### **Form Title:**
+**ASES Manila '25 - '26 | Member Application Form**
 
-Example: 2nd Year - BS Marketing Management
-Facebook Link
-*
-Example: https://www.facebook.com/lkfavila
-Resume / Curriculum Vitae Link
-*
-Please attach the working link of your Resume / CV. If not applicable, kindly place your previous key projects/roles in bullet points instead.
-LinkedIn Link
-Recommended but not required.
-Hobbies and Interests
-*
-After section 2
-Section 3 of 5
-We Got a Few Questions For You!
-Answer each of the following questions in 3-4 sentences only. 
-What is your personal "Why?"
-*
-The thing that drives you to achieve great things. Tell us what motivates you and fuels your ambition.
-What are you currently building, or what do you want to build?
-*
-Tell us about anything you are actively building. If you haven’t started yet, share what you would like to build—and what problem you hope to solve. Show us how you’re turning ambition into action.
-Why do you want to be part of ASES Manila?
-*
-Tell us why this community matters to you and how it fits into your growth journey.
-Where do you see yourself in 1 to 2 years from now? 
-*
-Your short-term vision. What do you hope to learn, achieve, or create soon?
-How about 5 years from now?
-*
-Your long-term vision. How do you plan to grow and make an impact in the future?
-What is unique about you?
-*
-Something that sets you apart from others. Skills, perspectives, experiences, or qualities we can’t find anywhere else.
-After section 3
-Section 4 of 5
-Application Fee
-Kindly pay the membership fee before submitting the onboarding form. Check all the details to avoid issues with the payment.
-Membership Fees
-Each new member from a public university shall pay a membership fee of Php 250, while each new member from a private university shall pay a membership fee of Php 350 upon applying for the Organization. 
+### **Form Description:**
+Got big ideas? Bigger dreams? Ever wanted to build the next big thing? Let’s make them real, this is your shot.
 
-Each returning member, regardless of university, shall pay a membership fee of Php 250 upon renewing their membership. The Executive Board may increase or decrease the membership fee as deemed necessary at the end of each organizational cycle.
+Thank you for your interest in ASES Manila for the 2025-2026 cycle! We’re thrilled to learn more about you and your aspirations, and to show you how being part of our dynamic community can help you turn those ambitions into reality.
 
-New Member from Public University - Php 250
-New Member from Private University - Php 350
-Returning Member (Regardless of University) - Php 250
-Type of Member
-*
-New
-Returning
-Type of University
-*
-Public
-Private
-Payment Method
-GCash:
+As the Manila chapter of **Affiliated Stanford Entrepreneurial Students (ASES)**, a global student entrepreneurship organization where college students come together to turn ideas into reality, sharpen their skills, and grow as future leaders. Our community thrives on innovation, design thinking, and self-development, providing the perfect environment for ambitious students to learn, connect, and make an impact.
+
+**Applications are open throughout the year. To proceed:**
+1. Complete this application form.
+2. Review our application primer for guidance on the application process.
+
+Once you submit your application, **we’ll send you an email within 5 days** with next steps and updates—so get ready for some exciting news in your inbox! 🚀 For any questions, feel free to reach out to **asesmanila.team@gmail.com** or contact any of our P&E officers:
+
+**Marco Roberto Valenton**
+Email: marco.roberto.valenton@student.ateneo.edu
+
+**Lynn Kelly Favila**
+Email: lynn_kelly_favila@dlsu.edu.ph
+
+**Eduardo Louis Zablan**
+Email: eduardo.louis.zablan@student.ateneo.edu
+
+We look forward to welcoming you to ASES Manila—where your ideas, passion, and drive take flight, and where **dreamers become builders who create real impact.** 🚀🌟
+
+---
+
+### **Section 1: Data Privacy Consent**
+
+**Text Block (Description):**
+In compliance with **Republic Act 10173**, also known as the **Data Privacy Act of 2012**, all personal information collected through this form, including your full name and email address, will be utilized exclusively for documentation purposes, with your explicit consent. Upon filling out this form, I give my full consent and authorization for ASES Manila to:
+
+1. Use my personal data for the sole purpose of the ASES Manila Membership Application for the year 2025-2026;
+2. Retain my information throughout the application process, such that I agree and understand that my information will be kept and archived for documentation purposes; and
+3. I understand that access to my personal data will only be limited to ASES Manila and its representatives, and I am assured that necessary precautions will be taken by ASES Manila to protect my personal information.
+
+Rest assured that all personal data obtained from this form will be treated with the utmost confidentiality and will only be accessible to the administrators of this form.
+
+**Question 1:** Data Privacy Agreement
+*   **Type:** Multiple Choice / Radio Button
+*   **Required:** Yes
+*   **Question Text:** In accordance with Republic Act No. 10173, or the Data Privacy Act of 2012, I acknowledge my responsibilities and hereby give my consent to ASES Manila to collect my personal information by clicking “I agree” below.
+*   **Option 1:** I agree
+
+---
+
+### **Section 2: Personal Details**
+
+**Question 2:** Email Address
+*   **Type:** Short Answer (Email validation recommended)
+*   **Required:** Yes
+*   **Description:** Please input your active email.
+
+**Question 3:** Full Name (Last Name, First Name, Middle Name)
+*   **Type:** Short Answer
+*   **Required:** Yes
+*   **Description:** Example: Favila, Lynn Kelly Rapada
+
+**Question 4:** University and Branch
+*   **Type:** Short Answer
+*   **Required:** Yes
+*   **Description:** Please do not abbreviate.
+*   **Example:** University of the Philippines - Diliman
+
+**Question 5:** Current Year Level and Program
+*   **Type:** Short Answer
+*   **Required:** Yes
+*   **Description:** Please do not abbreviate.
+*   **Example:** 2nd Year - BS Marketing Management
+
+**Question 6:** Facebook Link
+*   **Type:** Short Answer (URL)
+*   **Required:** Yes
+*   **Example:** https://www.facebook.com/lkfavila
+
+**Question 7:** Resume / Curriculum Vitae Link
+*   **Type:** Short Answer (URL)
+*   **Required:** Yes
+*   **Description:** Please attach the working link of your Resume / CV. If not applicable, kindly place your previous key projects/roles in bullet points instead.
+
+**Question 8:** LinkedIn Link
+*   **Type:** Short Answer (URL)
+*   **Required:** No (Optional)
+*   **Description:** Recommended but not required.
+
+**Question 9:** Hobbies and Interests
+*   **Type:** Long Answer / Paragraph
+*   **Required:** Yes
+
+---
+
+### **Section 3: We Got a Few Questions For You!**
+
+**Section Header/Description:**
+Answer each of the following questions in **3-4 sentences only.**
+
+**Question 10:** What is your personal "Why?"
+*   **Type:** Long Answer / Paragraph
+*   **Required:** Yes
+*   **Description:** The thing that drives you to achieve great things. Tell us what motivates you and fuels your ambition.
+
+**Question 11:** What are you currently building, or what do you want to build?
+*   **Type:** Long Answer / Paragraph
+*   **Required:** Yes
+*   **Description:** Tell us about anything you are actively building. If you haven’t started yet, share what you would like to build—and what problem you hope to solve. Show us how you’re turning ambition into action.
+
+**Question 12:** Why do you want to be part of ASES Manila?
+*   **Type:** Long Answer / Paragraph
+*   **Required:** Yes
+*   **Description:** Tell us why this community matters to you and how it fits into your growth journey.
+
+**Question 13:** Where do you see yourself in 1 to 2 years from now?
+*   **Type:** Long Answer / Paragraph
+*   **Required:** Yes
+*   **Description:** Your short-term vision. What do you hope to learn, achieve, or create soon?
+
+**Question 14:** How about 5 years from now?
+*   **Type:** Long Answer / Paragraph
+*   **Required:** Yes
+*   **Description:** Your long-term vision. How do you plan to grow and make an impact in the future?
+
+**Question 15:** What is unique about you?
+*   **Type:** Long Answer / Paragraph
+*   **Required:** Yes
+*   **Description:** Something that sets you apart from others. Skills, perspectives, experiences, or qualities we can’t find anywhere else.
+
+---
+
+### **Section 4: Application Fee & Payment**
+
+**Text Block (Description):**
+Kindly pay the membership fee before submitting the onboarding form. Check **all the details** to avoid issues with the payment.
+
+**Membership Fees:**
+*   **New Member from Public University:** Php 250
+*   **New Member from Private University:** Php 350
+*   **Returning Member (Regardless of University):** Php 250
+
+**Question 16:** Type of Member
+*   **Type:** Multiple Choice
+*   **Required:** Yes
+*   **Options:**
+    1. New
+    2. Returning
+
+**Question 17:** Type of University
+*   **Type:** Multiple Choice
+*   **Required:** Yes
+*   **Options:**
+    1. Public
+    2. Private
+
+**Text Block (Payment Methods):**
+**GCash:**
 Katherine Mae Duavit
 0927 686 5534
 
-BPI:
+**BPI:**
 Katherine Mae Duavit
 3089406047
-GCash QR Code
 
-BPI QR Code
+*[Note: Insert placeholder image for GCash QR Code here]*
+*[Note: Insert placeholder image for BPI QR Code here]*
 
-Payment Reminders
-Reminder:
+**Payment Reminders:**
 1. If applicable, in the REMARKS / NOTES section of the transfer, kindly include ASES MNL - FULL NAME. [Example: ASES MNL - KATHERINE MAE DUAVIT]
 2. Please limit each transaction to ONE membership fee payment.
-3. For other questions and concerns regarding payment, please feel free to contact:
-Katherine Mae Duavit
-0927 686 5534 
-Facebook: Kat Duavit
+3. For other questions and concerns regarding payment, please feel free to contact: Katherine Mae Duavit (0927 686 5534) or Facebook: Kat Duavit.
 
-Disclaimer:
-There are no refunds or returns for payments that are missing the remarks section (for bank-to-bank), and/or are over or under the payment. If under payment, the applicant is required to pay for the lacking amount. ASES Manila is not liable for any potential losses.
-Amount Paid
-*
-Example: 350
-Reference Number
-*
- 
-Proof of Payment
-*
-Please attach the Google Drive link of your proof of payment.
+**Disclaimer:** There are no refunds or returns for payments that are missing the remarks section (for bank-to-bank), and/or are over or under the payment. If under payment, the applicant is required to pay for the lacking amount. ASES Manila is not liable for any potential losses.
+
+**Question 18:** Amount Paid
+*   **Type:** Short Answer / Number
+*   **Required:** Yes
+*   **Example:** 350
+
+**Question 19:** Reference Number
+*   **Type:** Short Answer
+*   **Required:** Yes
+
+**Question 20:** Proof of Payment
+*   **Type:** Short Answer (URL) or File Upload
+*   **Required:** Yes
+*   **Description:** Please attach the Google Drive link of your proof of payment.
+
+---
+
+### **Section 5: Closing**
+
+**Title:** Nice one, that's about it!
+
+**Description:**
+Thank you for answering this application form! We’re excited to see your interest and can’t wait to learn more about you. This is your chance to share your ideas, passion, and drive, and potentially join a community that turns ambition into action while helping students grow as builders and innovators.
+
+You’ll receive an email in the **next 5 days** letting you know the **status of your application**—whether you’ve been accepted into ASES Manila 2025–2026 or not.
+
+**Stay tuned, and get ready for an exciting journey with ASES Manila!** 🚀🌟
+
+**(Contact Info Repeated):**
+Marco Roberto Valenton (marco.roberto.valenton@student.ateneo.edu)
+Lynn Kelly Favila (lynn_kelly_favila@dlsu.edu.ph)
+Eduardo Louis Zablan (eduardo.louis.zablan@student.ateneo.edu)

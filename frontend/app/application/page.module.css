@@ -127,6 +127,12 @@
   border: 1px solid rgba(5, 150, 105, 0.2);
 }
 
+.noticeError {
+  background: var(--error-soft);
+  color: var(--error);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
 /* ================================================================
    SUBMITTED VIEW (PENDING / ACCEPTED)
    ================================================================ */
@@ -368,6 +374,10 @@
   color: var(--text-tertiary);
 }
 
+.autosaveError {
+  color: var(--error);
+}
+
 /* ================================================================
    FORM WORKSPACE (DRAFT / REJECTED)
    ================================================================ */
@@ -423,6 +433,23 @@
   color: var(--success);
 }
 
+.stepTabError {
+  color: var(--error);
+}
+
+.stepErrorBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: var(--error-soft);
+  color: var(--error);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
 .stepDot {
   flex-shrink: 0;
   width: 22px;
@@ -448,6 +475,12 @@
   border-color: transparent;
   background: var(--success);
   color: white;
+}
+
+.stepTabError .stepDot {
+  border-color: transparent;
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--error);
 }
 
 .stepProgress {
@@ -487,6 +520,168 @@
   line-height: 1.5;
 }
 
+/* ── Info box (fees, payment methods) ────────── */
+.infoBox {
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--gray-100);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.infoBoxTitle {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.infoBoxList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.88rem;
+  color: var(--gray-700);
+  line-height: 1.5;
+}
+
+.infoBoxNote {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.paymentMethods {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.paymentMethodLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gray-500);
+}
+
+.paymentMethodValue {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-top: 2px;
+}
+
+.qrGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.qrCard {
+  margin: 0;
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.qrImage {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-100);
+}
+
+.qrCaption {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── Consent card ────────────────────────────── */
+.consentCard {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeIn 400ms var(--ease-out) 60ms both;
+}
+
+.consentTitle {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.consentBody {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.consentBody ol {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Disclaimer ──────────────────────────────── */
+.disclaimer {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--warning-soft);
+  border: 1px solid rgba(217, 119, 6, 0.12);
+}
+
+/* ── Closing note ────────────────────────────── */
+.closingNote {
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--gray-100);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.closingContact {
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+  line-height: 1.7;
+}
+
 /* ── Form fields ────────────────────────────── */
 .fieldGrid {
   display: flex;
@@ -504,6 +699,13 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--gray-700);
+}
+
+.fieldHint {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  line-height: 1.45;
+  margin-top: -2px;
 }
 
 .field input,
@@ -779,6 +981,28 @@
   border-top: 1px solid var(--gray-100);
 }
 
+.footerActionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footerNavActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footerDangerAction {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
 /* ── Actions row ────────────────────────────── */
 .actions {
   display: flex;
@@ -847,6 +1071,17 @@
   background: var(--gray-50);
   border-color: var(--border-strong);
   color: var(--text-primary);
+}
+
+.btnDangerGhost {
+  background: transparent;
+  color: var(--error);
+  border: 1px solid rgba(220, 38, 38, 0.35);
+}
+
+.btnDangerGhost:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.06);
+  border-color: rgba(220, 38, 38, 0.5);
 }
 
 /* ── Helper text ────────────────────────────── */
@@ -947,6 +1182,30 @@
     width: 20px;
     height: 20px;
     font-size: 0.68rem;
+  }
+
+  .topBarRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .qrGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .footerActionsRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .footerNavActions {
+    width: 100%;
+  }
+
+  .footerDangerAction {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
   }
 }
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  deleteApplicationDraft,
   getApplication,
   getSession,
   reapplyApplication,
@@ -59,6 +60,69 @@ const requiredPaymentFields: Array<keyof ApplicationFormState> = [
   "referenceNumber",
 ];
 
+const stepIndexByField: Record<keyof ApplicationFormState, number> = {
+  description: 3,
+  email: 0,
+  fullName: 0,
+  universityAndBranch: 0,
+  currentYearLevelAndProgram: 0,
+  facebookLink: 0,
+  resumeOrCv: 0,
+  linkedInLink: 0,
+  hobbiesAndInterests: 0,
+  personalWhy: 1,
+  currentBuildingOrWantToBuild: 1,
+  whyAsesManila: 1,
+  oneToTwoYearVision: 1,
+  fiveYearVision: 1,
+  uniqueAboutYou: 1,
+  memberType: 2,
+  universityType: 2,
+  amountPaid: 2,
+  referenceNumber: 2,
+};
+
+const isFormFieldFilled = (
+  form: ApplicationFormState,
+  field: keyof ApplicationFormState
+) => {
+  const value = form[field];
+  if (field === "amountPaid") {
+    const amount = Number(value);
+    return Number.isFinite(amount) && amount > 0;
+  }
+
+  return typeof value === "string" && value.trim().length > 0;
+};
+
+const getFirstIncompleteStep = (
+  form: ApplicationFormState,
+  missingPaymentProof: boolean
+) => {
+  const personalComplete = requiredPersonalFields.every((field) =>
+    isFormFieldFilled(form, field)
+  );
+  if (!personalComplete) {
+    return 0;
+  }
+
+  const storyComplete = requiredStoryFields.every((field) =>
+    isFormFieldFilled(form, field)
+  );
+  if (!storyComplete) {
+    return 1;
+  }
+
+  const paymentComplete =
+    requiredPaymentFields.every((field) => isFormFieldFilled(form, field)) &&
+    !missingPaymentProof;
+  if (!paymentComplete) {
+    return 2;
+  }
+
+  return 3;
+};
+
 /* ── Answer display groups (for submitted view) ────── */
 const answerSections = [
   {
@@ -110,6 +174,47 @@ const formatDateTime = (value: string | null) => {
   return date.toLocaleString();
 };
 
+const formatSavedTime = (value: string | null): string | null => {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  const now = new Date();
+  const diffSeconds = Math.max(
+    0,
+    Math.floor((now.getTime() - date.getTime()) / 1000)
+  );
+  if (diffSeconds < 60) {
+    const unit = diffSeconds === 1 ? "second" : "seconds";
+    return `${diffSeconds} ${unit} ago`;
+  }
+
+  const timeLabel = date.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  const isSameDay = date.toDateString() === now.toDateString();
+
+  if (isSameDay) {
+    return `Today at ${timeLabel}`;
+  }
+
+  const isSameYear = date.getFullYear() === now.getFullYear();
+  const dateLabel = date.toLocaleDateString(
+    [],
+    isSameYear
+      ? { month: "short", day: "numeric" }
+      : { month: "short", day: "numeric", year: "numeric" }
+  );
+
+  return `${dateLabel} at ${timeLabel}`;
+};
+
 const statusConfig = (status: ApplicationSummary["status"] | null) => {
   if (!status) {
     return { label: "Not started", className: "" };
@@ -132,6 +237,49 @@ const statusConfig = (status: ApplicationSummary["status"] | null) => {
 
 type FieldErrorMap = Partial<Record<keyof ApplicationFormState, string>>;
 
+const toFriendlyFieldError = (
+  field: keyof ApplicationFormState,
+  message?: string
+): string => {
+  const normalized = (message ?? "").toLowerCase();
+
+  if (field === "email") {
+    return normalized.includes("email")
+      ? "Please enter a valid email address."
+      : "Please enter your email address.";
+  }
+
+  if (field === "facebookLink" || field === "resumeOrCv" || field === "linkedInLink") {
+    return "Please enter a valid link (include https://).";
+  }
+
+  if (field === "amountPaid") {
+    return "Please enter a valid amount greater than 0.";
+  }
+
+  if (field === "memberType" || field === "universityType") {
+    return "Please choose an option.";
+  }
+
+  if (normalized.includes("too big") || normalized.includes("at most")) {
+    return "This response is too long. Please shorten it.";
+  }
+
+  if (
+    normalized.includes("at least") ||
+    normalized.includes("required") ||
+    normalized.includes("expected")
+  ) {
+    const cleanLabel = labelByField[field]
+      .replace(/\(optional\)/gi, "")
+      .trim()
+      .toLowerCase();
+    return `Please fill in ${cleanLabel}.`;
+  }
+
+  return "Please check this answer and try again.";
+};
+
 const normalizeServerIssues = (error: ApiError): FieldErrorMap => {
   const result: FieldErrorMap = {};
 
@@ -142,7 +290,8 @@ const normalizeServerIssues = (error: ApiError): FieldErrorMap => {
   for (const issue of details?.issues ?? []) {
     const key = issue.path?.[0] === "answers" ? issue.path[1] : issue.path?.[0];
     if (typeof key === "string" && key in labelByField) {
-      result[key as keyof ApplicationFormState] = issue.message ?? "Invalid value.";
+      const field = key as keyof ApplicationFormState;
+      result[field] = toFriendlyFieldError(field, issue.message);
     }
   }
 
@@ -154,6 +303,7 @@ type TextInputProps = {
   label: string;
   value: string;
   placeholder?: string;
+  hint?: string;
   disabled: boolean;
   error?: string;
   onChange: (field: keyof ApplicationFormState, value: string) => void;
@@ -165,6 +315,7 @@ const TextInput = ({
   label,
   value,
   placeholder,
+  hint,
   disabled,
   error,
   onChange,
@@ -172,6 +323,7 @@ const TextInput = ({
 }: TextInputProps) => (
   <div className={styles.field}>
     <label htmlFor={id}>{label}</label>
+    {hint ? <p className={styles.fieldHint}>{hint}</p> : null}
     {multiline ? (
       <textarea
         id={id}
@@ -216,8 +368,9 @@ export default function ApplicationPage() {
   const [dirty, setDirty] = useState(false);
   const [autosaveReady, setAutosaveReady] = useState(false);
   const [isAutosaving, setIsAutosaving] = useState(false);
-  const [autosaveMessage, setAutosaveMessage] = useState<string | null>(null);
+  const [autosaveError, setAutosaveError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
+  const [isDeletingDraft, setIsDeletingDraft] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -225,6 +378,9 @@ export default function ApplicationPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrorMap>({});
   const [showSubmission, setShowSubmission] = useState(false);
+  const [showDraftStatus, setShowDraftStatus] = useState(false);
+  const draftTopRef = useRef<HTMLElement | null>(null);
+  const [clockTick, setClockTick] = useState(() => Date.now());
 
   const isEditable = application?.status === "DRAFT" || application?.status === "REJECTED";
   const isSubmitted = application?.status === "PENDING" || application?.status === "ACCEPTED";
@@ -235,8 +391,11 @@ export default function ApplicationPage() {
     if (!response.hasApplication) {
       setHasApplication(false);
       setApplication(null);
+      setAutosaveError(null);
       if (shouldResetForm) {
         setForm(emptyApplicationForm);
+        setActiveStep(0);
+        setShowDraftStatus(false);
       }
       setDirty(false);
       return;
@@ -244,9 +403,25 @@ export default function ApplicationPage() {
 
     setHasApplication(true);
     setApplication(response.application);
+    setAutosaveError(null);
     if (shouldResetForm) {
-      setForm(fromApiAnswers(response.application.answers));
+      const hydratedForm = fromApiAnswers(response.application.answers);
+      setForm(hydratedForm);
       setDirty(false);
+      setShowDraftStatus(false);
+      if (
+        response.application.status === "DRAFT" ||
+        response.application.status === "REJECTED"
+      ) {
+        setActiveStep(
+          getFirstIncompleteStep(
+            hydratedForm,
+            response.application.missingPaymentProof
+          )
+        );
+      } else {
+        setActiveStep(3);
+      }
     }
   }, []);
 
@@ -279,29 +454,93 @@ export default function ApplicationPage() {
     void loadPage();
   }, [loadPage]);
 
+  useEffect(() => {
+    if (!application?.updatedAt) {
+      return;
+    }
+
+    // Keep relative "x seconds ago" label fresh shortly after saves.
+    const intervalId = window.setInterval(() => {
+      setClockTick(Date.now());
+    }, 1000);
+
+    const timeoutId = window.setTimeout(() => {
+      window.clearInterval(intervalId);
+    }, 2 * 60 * 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [application?.updatedAt]);
+
   const onFieldChange = (field: keyof ApplicationFormState, value: string) => {
+    if (form[field] === value) {
+      return;
+    }
+
     setForm((current) => ({ ...current, [field]: value }));
     setFieldErrors((current) => ({ ...current, [field]: undefined }));
+    setAutosaveError(null);
     setDirty(true);
     setSuccessMessage(null);
   };
+
+  const goToStep = useCallback((nextStep: number) => {
+    setActiveStep(nextStep);
+    window.requestAnimationFrame(() => {
+      draftTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, []);
+
+  const openDraftStatus = useCallback(() => {
+    setShowDraftStatus(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const continueFromDraftStatus = useCallback(() => {
+    if (!application) {
+      return;
+    }
+
+    setShowDraftStatus(false);
+    goToStep(getFirstIncompleteStep(form, application.missingPaymentProof));
+  }, [application, form, goToStep]);
 
   useEffect(() => {
     if (!autosaveReady || !dirty || !isEditable || !hasApplication) {
       return;
     }
 
+    const persistedForm = fromApiAnswers(application?.answers ?? {});
+    const hasUnsavedChanges = (
+      Object.keys(emptyApplicationForm) as Array<keyof ApplicationFormState>
+    ).some((field) => form[field] !== persistedForm[field]);
+
+    if (!hasUnsavedChanges) {
+      setDirty(false);
+      return;
+    }
+
     const timer = window.setTimeout(async () => {
       setIsAutosaving(true);
-      setAutosaveMessage("Saving draft...");
+      setAutosaveError(null);
 
       try {
-        await saveApplicationDraft(toDraftPayload(form));
+        const savedDraft = await saveApplicationDraft(toDraftPayload(form));
+        setApplication((current) =>
+          current
+            ? {
+                ...current,
+                updatedAt: savedDraft.data.updatedAt,
+                answers: savedDraft.data.answers,
+              }
+            : current
+        );
         setDirty(false);
-        setAutosaveMessage(`Draft saved at ${new Date().toLocaleTimeString()}`);
       } catch (error) {
         const message = error instanceof Error ? error.message : "Draft autosave failed.";
-        setAutosaveMessage(message);
+        setAutosaveError(message);
       } finally {
         setIsAutosaving(false);
       }
@@ -310,7 +549,7 @@ export default function ApplicationPage() {
     return () => {
       window.clearTimeout(timer);
     };
-  }, [autosaveReady, dirty, isEditable, hasApplication, form]);
+  }, [application?.answers, autosaveReady, dirty, isEditable, hasApplication, form]);
 
   const startDraft = async () => {
     setIsStarting(true);
@@ -391,11 +630,18 @@ export default function ApplicationPage() {
       for (const issue of validation.error.issues) {
         const key = issue.path[0];
         if (typeof key === "string" && key in labelByField) {
-          nextErrors[key as keyof ApplicationFormState] = issue.message;
+          const field = key as keyof ApplicationFormState;
+          nextErrors[field] = toFriendlyFieldError(field, issue.message);
         }
       }
       setFieldErrors(nextErrors);
       setErrorMessage("Please fix highlighted fields before submitting.");
+      const firstFieldWithError = (
+        Object.keys(nextErrors) as Array<keyof ApplicationFormState>
+      ).find((field) => Boolean(nextErrors[field]));
+      if (firstFieldWithError) {
+        goToStep(stepIndexByField[firstFieldWithError]);
+      }
       return;
     }
 
@@ -410,12 +656,18 @@ export default function ApplicationPage() {
         setSuccessMessage("Application submitted successfully.");
       }
       await loadApplication(true);
-      setActiveStep(3);
+      goToStep(3);
     } catch (error) {
       if (error instanceof ApiError) {
         const normalized = normalizeServerIssues(error);
         if (Object.keys(normalized).length > 0) {
           setFieldErrors(normalized);
+          const firstFieldWithError = (
+            Object.keys(normalized) as Array<keyof ApplicationFormState>
+          ).find((field) => Boolean(normalized[field]));
+          if (firstFieldWithError) {
+            goToStep(stepIndexByField[firstFieldWithError]);
+          }
         }
         setErrorMessage(error.message);
       } else {
@@ -428,15 +680,7 @@ export default function ApplicationPage() {
   };
 
   const isFieldFilled = useCallback(
-    (field: keyof ApplicationFormState) => {
-      const value = form[field];
-      if (field === "amountPaid") {
-        const amount = Number(value);
-        return Number.isFinite(amount) && amount > 0;
-      }
-
-      return typeof value === "string" && value.trim().length > 0;
-    },
+    (field: keyof ApplicationFormState) => isFormFieldFilled(form, field),
     [form]
   );
 
@@ -457,7 +701,10 @@ export default function ApplicationPage() {
   );
 
   const progressPercent = useMemo(() => {
-    const fromPosition = (activeStep / (stepDefinitions.length - 1)) * 100;
+    const fromPosition =
+      activeStep === 0
+        ? 0
+        : ((activeStep + 0.5) / stepDefinitions.length) * 100;
     const fromCompletion = (stepStatus.filter(Boolean).length / stepDefinitions.length) * 100;
     if (application?.status === "PENDING" || application?.status === "ACCEPTED") {
       return 100;
@@ -476,8 +723,73 @@ export default function ApplicationPage() {
     });
   }, [application]);
 
-  const canGoPrev = activeStep > 0;
+  const errorStepIndexes = useMemo(() => {
+    const indexes = new Set<number>();
+    for (const [field, message] of Object.entries(fieldErrors) as Array<
+      [keyof ApplicationFormState, string | undefined]
+    >) {
+      if (message) {
+        indexes.add(stepIndexByField[field]);
+      }
+    }
+    return indexes;
+  }, [fieldErrors]);
+
   const canGoNext = activeStep < stepDefinitions.length - 1;
+  const showTopStepErrorIndicator =
+    Boolean(errorMessage) && (errorStepIndexes.size > 0 || activeStep === 3);
+  const topErrorPrefix =
+    errorStepIndexes.size > 0 ? "Fix the highlighted sections above." : "Submission blocked.";
+
+  const autosaveStatusText = useMemo(() => {
+    if (isAutosaving) {
+      return "Saving draft...";
+    }
+
+    if (autosaveError) {
+      return autosaveError;
+    }
+
+    const savedAtLabel = formatSavedTime(application?.updatedAt ?? null);
+    if (savedAtLabel) {
+      return `Last saved ${savedAtLabel}`;
+    }
+
+    return "Autosave on";
+  }, [application?.updatedAt, autosaveError, clockTick, isAutosaving]);
+
+  const deleteDraft = async () => {
+    if (!application || application.status !== "DRAFT") {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Delete this draft application? This cannot be undone."
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeletingDraft(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setAutosaveError(null);
+    setDirty(false);
+
+    try {
+      await deleteApplicationDraft();
+      await loadApplication(true);
+      setActiveStep(0);
+      setUploadFile(null);
+      setSuccessMessage("Application draft deleted.");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to delete draft.";
+      setErrorMessage(message);
+    } finally {
+      setIsDeletingDraft(false);
+    }
+  };
 
   /* ── Loading state ──────────────────────────────── */
   if (loading) {
@@ -498,8 +810,10 @@ export default function ApplicationPage() {
     return (
       <main className={styles.page}>
         <header className={styles.hero}>
-          <h1 className={styles.title}>Start now, build now.</h1>
-          <p className={styles.subtitle}>Sign in with Google to begin your ASES Manila application.</p>
+          <h1 className={styles.title}>Got big ideas? Let&apos;s make them real.</h1>
+          <p className={styles.subtitle}>
+            Thank you for your interest in ASES Manila for the 2025–2026 cycle! As the Manila chapter of <strong>Affiliated Stanford Entrepreneurial Students (ASES)</strong>, we&apos;re a global student entrepreneurship community where college students turn ideas into reality, sharpen their skills, and grow as future leaders.
+          </p>
         </header>
 
         <section className={styles.emptyCard}>
@@ -511,7 +825,7 @@ export default function ApplicationPage() {
             </svg>
           </div>
           <h2>Sign in to continue</h2>
-          <p className={styles.helper}>You need an active session to access the application portal.</p>
+          <p className={styles.helper}>Sign in with Google to begin your member application.</p>
           <a className={`${styles.btn} ${styles.btnPrimary}`} href={`${API_ORIGIN}/auth/google`}>
             Sign in with Google
           </a>
@@ -529,9 +843,25 @@ export default function ApplicationPage() {
             Welcome, {sessionUser.name.split(" ")[0]}.
           </h1>
           <p className={styles.subtitle}>
-            Ready to start your ASES Manila journey? Create a draft and fill it out at your own pace.
+            We&apos;re thrilled to learn more about you and your aspirations. Applications are open throughout the year — once you submit, we&apos;ll send you an email within 5 days with next steps.
           </p>
         </header>
+
+        {/* Data Privacy Consent */}
+        <section className={styles.consentCard}>
+          <h3 className={styles.consentTitle}>Data Privacy Consent</h3>
+          <div className={styles.consentBody}>
+            <p>
+              In compliance with <strong>Republic Act 10173</strong> (Data Privacy Act of 2012), all personal information collected through this form will be utilized exclusively for documentation purposes, with your explicit consent. By proceeding, you consent to ASES Manila to:
+            </p>
+            <ol>
+              <li>Use your personal data for the sole purpose of the ASES Manila Membership Application for the year 2025–2026;</li>
+              <li>Retain your information throughout the application process for documentation purposes; and</li>
+              <li>Limit access to your personal data to ASES Manila and its representatives, with necessary precautions taken to protect your information.</li>
+            </ol>
+            <p>All personal data will be treated with the utmost confidentiality.</p>
+          </div>
+        </section>
 
         <section className={styles.startCard}>
           <div className={styles.startCardIcon}>
@@ -544,7 +874,7 @@ export default function ApplicationPage() {
           </div>
           <h2>Create your application</h2>
           <p className={styles.helper}>
-            Your progress saves automatically. Come back anytime to continue where you left off.
+            By starting your application, you agree to the data privacy terms above. Your progress saves automatically.
           </p>
           <div className={styles.actions}>
             <button
@@ -572,8 +902,8 @@ export default function ApplicationPage() {
           <h1 className={styles.title}>Your application</h1>
           <p className={styles.subtitle}>
             {application.status === "ACCEPTED"
-              ? "Congratulations! Your application has been accepted."
-              : "Your application has been submitted and is being reviewed."}
+              ? "Congratulations! Your application has been accepted. Welcome to ASES Manila!"
+              : "Thank you for your interest! You'll receive an email within 5 days with the status of your application."}
           </p>
         </header>
 
@@ -680,11 +1010,72 @@ export default function ApplicationPage() {
     );
   }
 
+  if (showDraftStatus) {
+    const status = statusConfig(application.status);
+    const incompleteCount =
+      application.missingRequiredFields.length +
+      (application.missingPaymentProof ? 1 : 0);
+
+    return (
+      <main className={styles.page}>
+        <header className={styles.hero}>
+          <h1 className={styles.title}>Application status</h1>
+          <p className={styles.subtitle}>
+            Review your current progress, then continue from the next unfinished section.
+          </p>
+        </header>
+
+        <section className={styles.submittedCard}>
+          <div className={styles.submittedHeader}>
+            <div className={styles.submittedStatusRow}>
+              <span className={`${styles.statusBadge} ${status.className}`}>
+                {status.label}
+              </span>
+            </div>
+            <h2 className={styles.submittedName}>{form.fullName || sessionUser.name}</h2>
+            <p className={styles.submittedEmail}>{form.email || "Email not added yet"}</p>
+          </div>
+
+          <div className={styles.submittedMeta}>
+            <div className={styles.metaItem}>
+              <span className={styles.metaLabel}>Last Saved</span>
+              <span className={styles.metaValue}>
+                {formatSavedTime(application.updatedAt) ?? "Not available"}
+              </span>
+            </div>
+            <div className={styles.metaItem}>
+              <span className={styles.metaLabel}>Missing items</span>
+              <span className={styles.metaValue}>
+                {incompleteCount === 0 ? "Complete" : `${incompleteCount} remaining`}
+              </span>
+            </div>
+            <div className={styles.metaItem}>
+              <span className={styles.metaLabel}>Payment proof</span>
+              <span className={styles.metaValue}>
+                {application.missingPaymentProof ? "Missing" : "Uploaded"}
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.submittedActions}>
+            <button
+              type="button"
+              className={`${styles.btn} ${styles.btnSecondary}`}
+              onClick={continueFromDraftStatus}
+            >
+              Continue application
+            </button>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
   /* ── Draft / Rejected — editable form ───────────── */
   return (
     <main className={styles.page}>
       {/* Compact top bar: brand + title + status + autosave */}
-      <header className={styles.topBar}>
+      <header ref={draftTopRef} className={styles.topBar}>
         <div className={styles.topBarLeft}>
           <h1 className={styles.topBarTitle}>
             {application.status === "REJECTED" ? "Revise application" : "Application"}
@@ -694,11 +1085,11 @@ export default function ApplicationPage() {
           </span>
         </div>
         <div className={styles.topBarRight}>
-          {autosaveMessage ? (
-            <span className={styles.autosaveMsg}>{autosaveMessage}</span>
-          ) : (
-            <span className={styles.autosaveMsg}>Autosave on</span>
-          )}
+          <span
+            className={`${styles.autosaveMsg} ${autosaveError ? styles.autosaveError : ""}`}
+          >
+            {autosaveStatusText}
+          </span>
         </div>
       </header>
 
@@ -709,6 +1100,12 @@ export default function ApplicationPage() {
         </section>
       ) : null}
 
+      {showTopStepErrorIndicator ? (
+        <section className={`${styles.notice} ${styles.noticeError}`}>
+          {topErrorPrefix} {errorMessage}
+        </section>
+      ) : null}
+
       <section className={styles.workspace}>
         {/* Step tabs — compact, single-line */}
         <nav className={styles.stepNav}>
@@ -716,14 +1113,15 @@ export default function ApplicationPage() {
             {stepDefinitions.map((step, index) => {
               const active = index === activeStep;
               const done = stepStatus[index];
+              const hasErrors = errorStepIndexes.has(index);
               return (
                 <button
                   type="button"
                   key={step.label}
                   className={`${styles.stepTab} ${active ? styles.stepTabActive : ""} ${
                     done ? styles.stepTabDone : ""
-                  }`}
-                  onClick={() => setActiveStep(index)}
+                  } ${hasErrors ? styles.stepTabError : ""}`}
+                  onClick={() => goToStep(index)}
                 >
                   <span className={styles.stepDot}>
                     {done && !active ? (
@@ -735,6 +1133,7 @@ export default function ApplicationPage() {
                     )}
                   </span>
                   {step.label}
+                  {hasErrors ? <span className={styles.stepErrorBadge}>!</span> : null}
                 </button>
               );
             })}
@@ -747,21 +1146,13 @@ export default function ApplicationPage() {
         <div className={styles.body}>
           {activeStep === 0 ? (
             <article className={styles.card}>
-              <p className={styles.sectionHint}>Tell us who you are and where you currently are.</p>
+              <p className={styles.sectionHint}>Personal Details — tell us who you are.</p>
               <div className={styles.fieldGrid}>
-                <TextInput
-                  id="description"
-                  label={labelByField.description}
-                  value={form.description}
-                  onChange={onFieldChange}
-                  disabled={!isEditable}
-                  multiline
-                />
-
                 <div className={styles.inlineTwo}>
                   <TextInput
                     id="email"
                     label={labelByField.email}
+                    hint="Please input your active email."
                     value={form.email}
                     onChange={onFieldChange}
                     disabled={!isEditable}
@@ -770,6 +1161,8 @@ export default function ApplicationPage() {
                   <TextInput
                     id="fullName"
                     label={labelByField.fullName}
+                    hint="Example: Favila, Lynn Kelly Rapada"
+                    placeholder="Last Name, First Name, Middle Name"
                     value={form.fullName}
                     onChange={onFieldChange}
                     disabled={!isEditable}
@@ -780,6 +1173,8 @@ export default function ApplicationPage() {
                 <TextInput
                   id="universityAndBranch"
                   label={labelByField.universityAndBranch}
+                  hint="Please do not abbreviate."
+                  placeholder="e.g. University of the Philippines - Diliman"
                   value={form.universityAndBranch}
                   onChange={onFieldChange}
                   disabled={!isEditable}
@@ -789,6 +1184,8 @@ export default function ApplicationPage() {
                 <TextInput
                   id="currentYearLevelAndProgram"
                   label={labelByField.currentYearLevelAndProgram}
+                  hint="Please do not abbreviate."
+                  placeholder="e.g. 2nd Year - BS Marketing Management"
                   value={form.currentYearLevelAndProgram}
                   onChange={onFieldChange}
                   disabled={!isEditable}
@@ -799,6 +1196,8 @@ export default function ApplicationPage() {
                   <TextInput
                     id="facebookLink"
                     label={labelByField.facebookLink}
+                    hint="Required."
+                    placeholder="https://www.facebook.com/yourprofile"
                     value={form.facebookLink}
                     onChange={onFieldChange}
                     disabled={!isEditable}
@@ -807,6 +1206,8 @@ export default function ApplicationPage() {
                   <TextInput
                     id="linkedInLink"
                     label={labelByField.linkedInLink}
+                    hint="Optional."
+                    placeholder="https://www.linkedin.com/in/yourprofile"
                     value={form.linkedInLink}
                     onChange={onFieldChange}
                     disabled={!isEditable}
@@ -817,9 +1218,12 @@ export default function ApplicationPage() {
                 <TextInput
                   id="resumeOrCv"
                   label={labelByField.resumeOrCv}
+                  hint="Attach a working link to your Resume / CV. If not applicable, list your previous key projects/roles in bullet points."
+                  placeholder="https://drive.google.com/..."
                   value={form.resumeOrCv}
                   onChange={onFieldChange}
                   disabled={!isEditable}
+                  multiline
                   error={fieldErrors.resumeOrCv}
                 />
 
@@ -829,6 +1233,7 @@ export default function ApplicationPage() {
                   value={form.hobbiesAndInterests}
                   onChange={onFieldChange}
                   disabled={!isEditable}
+                  multiline
                   error={fieldErrors.hobbiesAndInterests}
                 />
               </div>
@@ -837,11 +1242,12 @@ export default function ApplicationPage() {
 
           {activeStep === 1 ? (
             <article className={styles.card}>
-              <p className={styles.sectionHint}>Share your motivation, direction, and long-term goals.</p>
+              <p className={styles.sectionHint}>We got a few questions for you! Answer each in 3–4 sentences only.</p>
               <div className={styles.fieldGrid}>
                 <TextInput
                   id="personalWhy"
                   label={labelByField.personalWhy}
+                  hint="The thing that drives you to achieve great things. Tell us what motivates you and fuels your ambition."
                   value={form.personalWhy}
                   onChange={onFieldChange}
                   disabled={!isEditable}
@@ -852,6 +1258,7 @@ export default function ApplicationPage() {
                 <TextInput
                   id="currentBuildingOrWantToBuild"
                   label={labelByField.currentBuildingOrWantToBuild}
+                  hint="Tell us about anything you are actively building. If you haven't started yet, share what you would like to build—and what problem you hope to solve."
                   value={form.currentBuildingOrWantToBuild}
                   onChange={onFieldChange}
                   disabled={!isEditable}
@@ -862,6 +1269,7 @@ export default function ApplicationPage() {
                 <TextInput
                   id="whyAsesManila"
                   label={labelByField.whyAsesManila}
+                  hint="Tell us why this community matters to you and how it fits into your growth journey."
                   value={form.whyAsesManila}
                   onChange={onFieldChange}
                   disabled={!isEditable}
@@ -869,30 +1277,32 @@ export default function ApplicationPage() {
                   error={fieldErrors.whyAsesManila}
                 />
 
-                <div className={styles.inlineTwo}>
-                  <TextInput
-                    id="oneToTwoYearVision"
-                    label={labelByField.oneToTwoYearVision}
-                    value={form.oneToTwoYearVision}
-                    onChange={onFieldChange}
-                    disabled={!isEditable}
-                    multiline
-                    error={fieldErrors.oneToTwoYearVision}
-                  />
-                  <TextInput
-                    id="fiveYearVision"
-                    label={labelByField.fiveYearVision}
-                    value={form.fiveYearVision}
-                    onChange={onFieldChange}
-                    disabled={!isEditable}
-                    multiline
-                    error={fieldErrors.fiveYearVision}
-                  />
-                </div>
+                <TextInput
+                  id="oneToTwoYearVision"
+                  label={labelByField.oneToTwoYearVision}
+                  hint="Your short-term vision. What do you hope to learn, achieve, or create soon?"
+                  value={form.oneToTwoYearVision}
+                  onChange={onFieldChange}
+                  disabled={!isEditable}
+                  multiline
+                  error={fieldErrors.oneToTwoYearVision}
+                />
+
+                <TextInput
+                  id="fiveYearVision"
+                  label={labelByField.fiveYearVision}
+                  hint="Your long-term vision. How do you plan to grow and make an impact in the future?"
+                  value={form.fiveYearVision}
+                  onChange={onFieldChange}
+                  disabled={!isEditable}
+                  multiline
+                  error={fieldErrors.fiveYearVision}
+                />
 
                 <TextInput
                   id="uniqueAboutYou"
                   label={labelByField.uniqueAboutYou}
+                  hint="Something that sets you apart. Skills, perspectives, experiences, or qualities we can't find anywhere else."
                   value={form.uniqueAboutYou}
                   onChange={onFieldChange}
                   disabled={!isEditable}
@@ -905,7 +1315,61 @@ export default function ApplicationPage() {
 
           {activeStep === 2 ? (
             <article className={styles.card}>
-              <p className={styles.sectionHint}>Select your fee context and attach proof of payment.</p>
+              <p className={styles.sectionHint}>Application Fee &amp; Payment — kindly pay the membership fee before submitting.</p>
+
+              {/* Fee info box */}
+              <div className={styles.infoBox}>
+                <p className={styles.infoBoxTitle}>Membership Fees</p>
+                <ul className={styles.infoBoxList}>
+                  <li>New Member from Public University — <strong>Php 250</strong></li>
+                  <li>New Member from Private University — <strong>Php 350</strong></li>
+                  <li>Returning Member (regardless of university) — <strong>Php 250</strong></li>
+                </ul>
+              </div>
+
+              {/* Payment methods */}
+              <div className={styles.infoBox}>
+                <p className={styles.infoBoxTitle}>Payment Methods</p>
+                <div className={styles.paymentMethods}>
+                  <div>
+                    <p className={styles.paymentMethodLabel}>GCash</p>
+                    <p className={styles.paymentMethodValue}>Katherine Mae Duavit — 0927 686 5534</p>
+                  </div>
+                  <div>
+                    <p className={styles.paymentMethodLabel}>BPI</p>
+                    <p className={styles.paymentMethodValue}>Katherine Mae Duavit — 3089406047</p>
+                  </div>
+                </div>
+
+                <div className={styles.qrGrid}>
+                  <figure className={styles.qrCard}>
+                    <img
+                      src="/gcash_qr_ases.jpg"
+                      alt="GCash payment QR code"
+                      className={styles.qrImage}
+                      loading="lazy"
+                    />
+                    <figcaption className={styles.qrCaption}>GCash QR</figcaption>
+                  </figure>
+
+                  <figure className={styles.qrCard}>
+                    <img
+                      src="/bpi_qr_code.jpg"
+                      alt="BPI payment QR code"
+                      className={styles.qrImage}
+                      loading="lazy"
+                    />
+                    <figcaption className={styles.qrCaption}>BPI QR</figcaption>
+                  </figure>
+                </div>
+
+                <div className={styles.infoBoxNote}>
+                  <p>In the remarks/notes section of the transfer, include: <strong>ASES MNL - YOUR FULL NAME</strong></p>
+                  <p>Limit each transaction to one membership fee payment.</p>
+                  <p>Questions about payment? Contact Katherine Mae Duavit (0927 686 5534) or Facebook: Kat Duavit.</p>
+                </div>
+              </div>
+
               <div className={styles.fieldGrid}>
                 <div className={styles.inlineTwo}>
                   <div className={styles.field}>
@@ -945,6 +1409,7 @@ export default function ApplicationPage() {
                   <TextInput
                     id="amountPaid"
                     label={labelByField.amountPaid}
+                    placeholder="e.g. 350"
                     value={form.amountPaid}
                     onChange={onFieldChange}
                     disabled={!isEditable}
@@ -1059,13 +1524,28 @@ export default function ApplicationPage() {
                     <p className={styles.uploadRequired}>Payment proof is required to submit.</p>
                   ) : null}
                 </div>
+
+                {/* Disclaimer */}
+                <div className={styles.disclaimer}>
+                  <strong>Disclaimer:</strong> There are no refunds or returns for payments that are missing the remarks section (for bank-to-bank), and/or are over or under the payment. If under payment, the applicant is required to pay for the lacking amount. ASES Manila is not liable for any potential losses.
+                </div>
               </div>
             </article>
           ) : null}
 
           {activeStep === 3 ? (
             <article className={styles.card}>
-              <p className={styles.sectionHint}>Verify everything looks good before submitting.</p>
+              <p className={styles.sectionHint}>Nice one, that&apos;s about it! Verify everything looks good before submitting.</p>
+
+              <TextInput
+                id="description"
+                label={labelByField.description}
+                hint="Anything else we should know? Tell us more about yourself, your goals, or anything you'd like to add."
+                value={form.description}
+                onChange={onFieldChange}
+                disabled={!isEditable}
+                multiline
+              />
 
               <div className={styles.reviewGrid}>
                 <div className={styles.reviewItem}>
@@ -1083,8 +1563,10 @@ export default function ApplicationPage() {
                   </p>
                 </div>
                 <div className={styles.reviewItem}>
-                  <p className={styles.reviewLabel}>Last reviewed</p>
-                  <p className={styles.reviewValue}>{formatDateTime(application.reviewedAt)}</p>
+                  <p className={styles.reviewLabel}>Last saved</p>
+                  <p className={styles.reviewValue}>
+                    {formatSavedTime(application.updatedAt) ?? "Not available"}
+                  </p>
                 </div>
               </div>
 
@@ -1102,6 +1584,19 @@ export default function ApplicationPage() {
                 <p className={styles.error}>Upload payment proof in Step 3 before submitting.</p>
               ) : null}
 
+              {/* Closing message */}
+              <div className={styles.closingNote}>
+                <p>
+                  Thank you for answering this application form! You&apos;ll receive an email in the <strong>next 5 days</strong> letting you know the status of your application.
+                </p>
+                <p className={styles.closingContact}>
+                  Questions? Reach out to <strong>asesmanila.team@gmail.com</strong> or contact our P&amp;E officers:
+                  <br />Marco Roberto Valenton — marco.roberto.valenton@student.ateneo.edu
+                  <br />Lynn Kelly Favila — lynn_kelly_favila@dlsu.edu.ph
+                  <br />Eduardo Louis Zablan — eduardo.louis.zablan@student.ateneo.edu
+                </p>
+              </div>
+
               {application.membershipGranted ? (
                 <div className={styles.actions}>
                   <a className={`${styles.btn} ${styles.btnSecondary}`} href="/onboarding">
@@ -1114,38 +1609,62 @@ export default function ApplicationPage() {
         </div>
 
         <footer className={styles.footerBar}>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={`${styles.btn} ${styles.btnGhost}`}
-              onClick={() => setActiveStep((current) => Math.max(0, current - 1))}
-              disabled={!canGoPrev}
-            >
-              Back
-            </button>
+          <div className={styles.footerActionsRow}>
+            <div className={styles.footerNavActions}>
+              <button
+                type="button"
+                className={`${styles.btn} ${styles.btnGhost}`}
+                onClick={() => {
+                  if (activeStep === 0) {
+                    openDraftStatus();
+                    return;
+                  }
+                  goToStep(Math.max(0, activeStep - 1));
+                }}
+                disabled={isDeletingDraft}
+              >
+                Back
+              </button>
 
-            {canGoNext ? (
-              <button
-                type="button"
-                className={`${styles.btn} ${styles.btnSecondary}`}
-                onClick={() => setActiveStep((current) => Math.min(stepDefinitions.length - 1, current + 1))}
-              >
-                Next step
-              </button>
-            ) : (
-              <button
-                type="button"
-                className={`${styles.btn} ${styles.btnPrimary}`}
-                disabled={!isEditable || isSubmitting || isAutosaving}
-                onClick={submit}
-              >
-                {isSubmitting
-                  ? "Submitting..."
-                  : application.status === "REJECTED"
-                    ? "Resubmit application"
-                    : "Submit application"}
-              </button>
-            )}
+              {canGoNext ? (
+                <button
+                  type="button"
+                  className={`${styles.btn} ${styles.btnSecondary}`}
+                  onClick={() =>
+                    goToStep(Math.min(stepDefinitions.length - 1, activeStep + 1))
+                  }
+                  disabled={isDeletingDraft}
+                >
+                  Next step
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={`${styles.btn} ${styles.btnPrimary}`}
+                  disabled={!isEditable || isSubmitting || isAutosaving || isDeletingDraft}
+                  onClick={submit}
+                >
+                  {isSubmitting
+                    ? "Submitting..."
+                    : application.status === "REJECTED"
+                      ? "Resubmit application"
+                      : "Submit application"}
+                </button>
+              )}
+            </div>
+
+            {application.status === "DRAFT" ? (
+              <div className={styles.footerDangerAction}>
+                <button
+                  type="button"
+                  className={`${styles.btn} ${styles.btnDangerGhost}`}
+                  onClick={deleteDraft}
+                  disabled={isDeletingDraft || isAutosaving || isSubmitting || isUploading}
+                >
+                  {isDeletingDraft ? "Deleting application..." : "Cancel application"}
+                </button>
+              </div>
+            ) : null}
           </div>
 
           {errorMessage ? <p className={styles.error}>{errorMessage}</p> : null}
