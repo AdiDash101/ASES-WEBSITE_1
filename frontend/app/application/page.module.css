@@ -1,0 +1,977 @@
+/* ================================================================
+   Application page
+   ================================================================ */
+
+/* ── Page shell ─────────────────────────────── */
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 36px 24px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Hero header ────────────────────────────── */
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fadeIn 400ms var(--ease-out);
+}
+
+.brand {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ases-red);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--gray-900);
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  max-width: 52ch;
+  line-height: 1.6;
+}
+
+/* ── Loading bar ────────────────────────────── */
+.loadingBar {
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+  overflow: hidden;
+  margin-top: 4px;
+  max-width: 180px;
+}
+
+.loadingBarFill {
+  height: 100%;
+  width: 40%;
+  border-radius: inherit;
+  background: var(--ases-red);
+  animation: loadingSlide 1.2s ease-in-out infinite;
+}
+
+@keyframes loadingSlide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+/* ── Status badges (shared) ─────────────────── */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+
+.statusDraft {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.statusPending {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.statusRejected {
+  background: var(--error-soft);
+  color: var(--error);
+}
+
+.statusAccepted {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+/* ── Portal notices ─────────────────────────── */
+.notice {
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.5;
+  animation: fadeIn 400ms var(--ease-out) 60ms both;
+}
+
+.noticeInfo {
+  background: var(--info-soft);
+  color: var(--info);
+  border: 1px solid rgba(67, 71, 160, 0.15);
+}
+
+.noticeWarn {
+  background: var(--warning-soft);
+  color: var(--warning);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.noticeOk {
+  background: var(--success-soft);
+  color: var(--success);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+/* ================================================================
+   SUBMITTED VIEW (PENDING / ACCEPTED)
+   ================================================================ */
+
+.submittedCard {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 400ms var(--ease-out) 60ms both;
+}
+
+.submittedHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.submittedStatusRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--success);
+  color: white;
+}
+
+.submittedName {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-top: 4px;
+}
+
+.submittedEmail {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.submittedMeta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.metaValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.submittedActions {
+  padding-top: 4px;
+}
+
+/* ── Collapsible section ────────────────────── */
+.collapsibleSection {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+  animation: fadeIn 400ms var(--ease-out) 120ms both;
+}
+
+.collapsibleTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+}
+
+.collapsibleTrigger:hover {
+  background: var(--gray-50);
+}
+
+.collapsibleTriggerText {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.collapsibleHint {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.chevron {
+  transition: transform 200ms var(--ease-out);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.collapsibleContent {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  animation: slideDown 300ms var(--ease-out);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Answer sections (within collapsible) ───── */
+.answerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.answerSectionTitle {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.answerList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.answerRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.answerLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gray-500);
+}
+
+.answerValue {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--gray-800);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ================================================================
+   COMPACT TOP BAR (DRAFT / REJECTED)
+   ================================================================ */
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  animation: fadeIn 400ms var(--ease-out);
+}
+
+.topBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topBarBrand {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ases-red);
+}
+
+.topBarTitle {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--gray-900);
+}
+
+.topBarRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.autosaveMsg {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+/* ================================================================
+   FORM WORKSPACE (DRAFT / REJECTED)
+   ================================================================ */
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeIn 400ms var(--ease-out) 60ms both;
+}
+
+/* ── Step tabs (compact) ────────────────────── */
+.stepNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.stepTabs {
+  display: flex;
+  gap: 2px;
+}
+
+.stepTab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray-400);
+  border-bottom: 2px solid transparent;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.stepTab:hover {
+  color: var(--gray-600);
+}
+
+.stepTabActive {
+  color: var(--gray-900);
+  border-bottom-color: var(--core-blue);
+}
+
+.stepTabDone:not(.stepTabActive) {
+  color: var(--success);
+}
+
+.stepDot {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--gray-300);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gray-400);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.stepTabActive .stepDot {
+  border-color: transparent;
+  background: var(--core-blue);
+  color: white;
+}
+
+.stepTabDone .stepDot {
+  border-color: transparent;
+  background: var(--success);
+  color: white;
+}
+
+.stepProgress {
+  height: 2px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.stepProgressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--core-blue), var(--ases-red));
+  transition: width 300ms var(--ease-out);
+}
+
+/* ── Content body ───────────────────────────── */
+.body {
+  min-height: 300px;
+}
+
+/* ── Card (form sections) ───────────────────── */
+.card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeIn 200ms var(--ease-out);
+}
+
+.sectionHint {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Form fields ────────────────────────────── */
+.fieldGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  transition:
+    border-color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--core-blue);
+  box-shadow: 0 0 0 3px rgba(67, 71, 160, 0.1);
+}
+
+.field input:disabled,
+.field textarea:disabled,
+.field select:disabled {
+  background: var(--gray-50);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.inlineTwo {
+  display: grid;
+  gap: 16px;
+}
+
+/* ── Upload zone ────────────────────────────── */
+.uploadZone {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.uploadLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.uploadSuccess {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--success-soft);
+  border: 1px solid rgba(5, 150, 105, 0.15);
+}
+
+.uploadSuccessIcon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--success);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uploadSuccessText {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.uploadSuccessHint {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.uploadDropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 20px;
+  border: 2px dashed var(--gray-200);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+  text-align: center;
+  transition:
+    border-color var(--duration-fast) ease,
+    background var(--duration-fast) ease;
+}
+
+.uploadDropzone:hover {
+  border-color: var(--core-blue);
+  background: rgba(67, 71, 160, 0.02);
+}
+
+.uploadDropzoneHasFile {
+  border-color: var(--core-blue);
+  border-style: solid;
+  background: var(--core-blue-soft);
+  padding: 20px;
+}
+
+.uploadDropzoneDisabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.uploadDropzoneDisabled:hover {
+  border-color: var(--gray-200);
+  background: var(--surface);
+}
+
+.uploadHiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.uploadIcon {
+  color: var(--gray-300);
+  margin-bottom: 4px;
+}
+
+.uploadDropzone:hover .uploadIcon {
+  color: var(--core-blue);
+}
+
+.uploadPromptTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.uploadPromptHint {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+}
+
+.uploadFileIcon {
+  color: var(--core-blue);
+}
+
+.uploadFileName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  word-break: break-all;
+}
+
+.uploadFileSize {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.uploadActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.uploadRequired {
+  font-size: 0.82rem;
+  color: var(--warning);
+  font-weight: 500;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: var(--radius-full);
+  animation: spin 600ms linear infinite;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Review grid ────────────────────────────── */
+.reviewGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.reviewItem {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--gray-100);
+}
+
+.reviewLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.reviewValue {
+  margin-top: 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--gray-900);
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.checklist li::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--warning);
+  flex-shrink: 0;
+}
+
+/* ── Footer bar ─────────────────────────────── */
+.footerBar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--gray-100);
+}
+
+/* ── Actions row ────────────────────────────── */
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ── Buttons ────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btnPrimary {
+  background: var(--ases-red);
+  color: white;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: var(--ases-red-hover);
+}
+
+.btnSecondary {
+  background: var(--core-blue);
+  color: white;
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background: var(--deep-navy);
+}
+
+.btnGhost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btnGhost:hover:not(:disabled) {
+  background: var(--gray-50);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+/* ── Helper text ────────────────────────────── */
+.helper {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.error {
+  font-size: 0.85rem;
+  color: var(--error);
+  font-weight: 500;
+}
+
+.success {
+  font-size: 0.85rem;
+  color: var(--success);
+  font-weight: 500;
+}
+
+/* ── Start / empty cards ────────────────────── */
+.startCard,
+.emptyCard {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 48px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+  align-items: center;
+  animation: fadeIn 400ms var(--ease-out) 80ms both;
+}
+
+.startCard h2,
+.emptyCard h2 {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.startCardIcon,
+.emptyCardIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: var(--core-blue-soft);
+  border: 1px solid rgba(67, 71, 160, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--core-blue);
+  margin-bottom: 4px;
+}
+
+/* ── Responsive ─────────────────────────────── */
+@media (min-width: 640px) {
+  .inlineTwo {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 24px 16px 80px;
+    gap: 16px;
+  }
+
+  .reviewGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .submittedCard {
+    padding: 24px 20px;
+  }
+
+  .collapsibleTrigger {
+    padding: 16px 20px;
+  }
+
+  .collapsibleContent {
+    padding: 0 20px 20px;
+  }
+
+  .stepTab {
+    font-size: 0.78rem;
+    padding: 8px 4px;
+    gap: 5px;
+  }
+
+  .stepDot {
+    width: 20px;
+    height: 20px;
+    font-size: 0.68rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .topBarLeft {
+    flex-wrap: wrap;
+  }
+
+  .submittedMeta {
+    grid-template-columns: 1fr;
+  }
+
+  .stepTabs {
+    gap: 0;
+  }
+}
+
+/* ── Enter animation ────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

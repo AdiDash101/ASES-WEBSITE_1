@@ -61,6 +61,10 @@ export const applicationReapplySchema = z.object({
   answers: applicationAnswersSchema,
 });
 
+export const applicationDraftSaveSchema = z.object({
+  answers: answersSchema,
+});
+
 export const paymentProofUploadUrlSchema = z.object({
   contentType: z.enum(paymentProofAllowedMimeTypes as [string, ...string[]]),
   contentLength: z.number().int().positive().max(paymentProofMaxBytes),

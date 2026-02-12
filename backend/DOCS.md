@@ -37,15 +37,17 @@ Login is open to any Google account. Membership access is controlled by applicat
 
 ## Application and payment flow
 1. Applicant starts a draft through `POST /application/start`.
-2. Applicant requests upload URL through `POST /application/payment-proof/upload-url`.
-3. API returns a MinIO pre-signed `PUT` URL plus required headers.
-4. Applicant submits answers through `POST /application`, which transitions status to `PENDING`.
-5. Submission is blocked until required answer keys are present and payment proof is uploaded.
-6. Required answer keys follow the finalized question set in `docs/app questions`.
-7. Admin lists applicants via `GET /admin/applications`.
-8. Admin verifies payment via `POST /admin/applications/:id/payment-verify`.
-9. Admin sets final decision via `POST /admin/applications/:id/decision`.
-10. Rejected applicants can resubmit via `POST /application/reapply`.
+2. Applicant can save partial answers through `POST /application/draft` while status is `DRAFT` or `REJECTED`.
+3. Applicant requests upload URL through `POST /application/payment-proof/upload-url`.
+4. API returns a MinIO pre-signed `PUT` URL plus required headers.
+5. Applicant submits answers through `POST /application`, which transitions status to `PENDING`.
+6. Submission is blocked until required answer keys are present and payment proof is uploaded.
+7. Required answer keys follow the finalized question set in `docs/app questions`.
+8. Admin lists applicants via `GET /admin/applications`.
+9. Admin fetches full answer payload via `GET /admin/applications/:id`.
+10. Admin verifies payment via `POST /admin/applications/:id/payment-verify`.
+11. Admin sets final decision via `POST /admin/applications/:id/decision`.
+12. Rejected applicants can resubmit via `POST /application/reapply`.
 
 ## Onboarding gate
 1. `GET /onboarding` and `POST /onboarding` require authentication.
@@ -68,16 +70,18 @@ Login is open to any Google account. Membership access is controlled by applicat
 8. `GET /me`
 9. `GET /application`
 10. `POST /application/start`
-11. `POST /application`
-12. `POST /application/reapply`
-13. `POST /application/payment-proof/upload-url`
-14. `GET /onboarding`
-15. `POST /onboarding`
-16. `GET /admin/users`
-17. `GET /admin/applications`
-18. `POST /admin/applications/:id/payment-verify`
-19. `POST /admin/applications/:id/decision`
-20. `POST /admin/onboarding/reset/:userId`
+11. `POST /application/draft`
+12. `POST /application`
+13. `POST /application/reapply`
+14. `POST /application/payment-proof/upload-url`
+15. `GET /onboarding`
+16. `POST /onboarding`
+17. `GET /admin/users`
+18. `GET /admin/applications`
+19. `GET /admin/applications/:id`
+20. `POST /admin/applications/:id/payment-verify`
+21. `POST /admin/applications/:id/decision`
+22. `POST /admin/onboarding/reset/:userId`
 
 ## Validation and error handling
 1. Request body and params are validated with Zod.
@@ -103,5 +107,4 @@ Login is open to any Google account. Membership access is controlled by applicat
 
 ## Known gaps
 1. No automated webhook/event confirmation for successful MinIO uploads.
-2. No admin UI in this repo yet; APIs are available.
-3. No rate limiting middleware yet.
+2. No rate limiting middleware yet.

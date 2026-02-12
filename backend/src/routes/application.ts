@@ -5,6 +5,7 @@ import { requireAuth } from "../middleware/requireAuth";
 import { asyncHandler } from "../utils/asyncHandler";
 import { validateBody } from "../middleware/validate";
 import {
+  applicationDraftSaveSchema,
   applicationReapplySchema,
   applicationSubmitSchema,
   paymentProofUploadUrlSchema,
@@ -46,8 +47,9 @@ router.get(
     }
 
     const { answersJson, ...applicationSummary } = application;
+    const answers = (answersJson ?? {}) as Record<string, unknown>;
     const missingRequiredFields = getMissingRequiredApplicationFields(
-      (answersJson ?? {}) as Record<string, unknown>
+      answers
     );
     const missingPaymentProof = !application.paymentProofKey;
 
@@ -55,6 +57,7 @@ router.get(
       hasApplication: true,
       application: {
         ...applicationSummary,
+        answers,
         canSubmit: application.status === "DRAFT",
         canReapply: application.status === "REJECTED",
         canUploadPaymentProof:
@@ -109,6 +112,60 @@ router.post(
     res.status(201).json({
       created: true,
       data: created,
+    });
+  })
+);
+
+router.post(
+  "/draft",
+  validateBody(applicationDraftSaveSchema),
+  asyncHandler(async (req: Request, res: Response) => {
+    const existing = await prisma.application.findUnique({
+      where: { userId: req.user!.id },
+      select: { id: true, status: true, answersJson: true },
+    });
+
+    if (!existing) {
+      throw new HttpError(
+        409,
+        "application_not_started",
+        "Start an application before saving a draft."
+      );
+    }
+
+    if (existing.status === "PENDING" || existing.status === "ACCEPTED") {
+      throw new HttpError(
+        409,
+        "application_locked",
+        "Draft changes are only allowed for draft or rejected applications."
+      );
+    }
+
+    const mergedAnswers = {
+      ...((existing.answersJson ?? {}) as Record<string, unknown>),
+      ...req.body.answers,
+    };
+
+    const updated = await prisma.application.update({
+      where: { id: existing.id },
+      data: {
+        answersJson: mergedAnswers,
+      },
+      select: {
+        id: true,
+        status: true,
+        updatedAt: true,
+        answersJson: true,
+      },
+    });
+
+    res.status(200).json({
+      data: {
+        id: updated.id,
+        status: updated.status,
+        updatedAt: updated.updatedAt,
+        answers: updated.answersJson,
+      },
     });
   })
 );

@@ -99,6 +99,58 @@ router.get(
   })
 );
 
+router.get(
+  "/applications/:id",
+  validateParams(uuidParamSchema),
+  asyncHandler(async (req: Request, res: Response) => {
+    const application = await prisma.application.findUnique({
+      where: { id: req.params.id },
+      select: {
+        id: true,
+        status: true,
+        answersJson: true,
+        submittedAt: true,
+        paymentProofKey: true,
+        paymentProofUploadedAt: true,
+        paymentVerifiedAt: true,
+        reviewedAt: true,
+        decisionNote: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            onboardingCompletedAt: true,
+          },
+        },
+      },
+    });
+
+    if (!application) {
+      throw new HttpError(404, "application_not_found", "Application not found.");
+    }
+
+    let paymentProofViewUrl: string | null = null;
+    if (application.paymentProofKey) {
+      try {
+        paymentProofViewUrl = await createPaymentProofViewUrl(
+          application.paymentProofKey
+        );
+      } catch {
+        paymentProofViewUrl = null;
+      }
+    }
+
+    res.status(200).json({
+      data: {
+        ...application,
+        answers: application.answersJson,
+        paymentProofViewUrl,
+      },
+    });
+  })
+);
+
 router.post(
   "/applications/:id/payment-verify",
   validateParams(uuidParamSchema),
