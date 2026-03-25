@@ -514,6 +514,143 @@
     }
   }
 
+  .ases-persona-section {
+    @apply pt-10 pb-8 sm:pt-12 sm:pb-10 md:pt-14 md:pb-12 lg:pt-16 lg:pb-14;
+  }
+
+  .ases-persona-shell {
+    @apply mx-auto flex w-full max-w-[68.5rem] flex-col items-center gap-8;
+  }
+
+  .ases-persona-header {
+    @apply flex flex-col items-center gap-3 text-center;
+  }
+
+  .ases-persona-title {
+    @apply font-display font-medium leading-[0.92] text-ink;
+    font-size: clamp(3rem, 7vw, 4rem);
+    letter-spacing: -0.05em;
+  }
+
+  .ases-persona-pill-list {
+    @apply flex flex-wrap items-center justify-center gap-3 sm:gap-6;
+  }
+
+  .ases-persona-pill {
+    @apply rounded-pill border border-ink bg-white px-[15px] py-[10px] font-display font-medium text-[16px] leading-none text-brand-ink-blue transition-colors duration-200;
+    letter-spacing: -0.05em;
+  }
+
+  .ases-persona-pill[data-active="true"] {
+    background: var(--persona-accent);
+    border-color: transparent;
+  }
+
+  .ases-persona-card {
+    @apply grid w-full overflow-hidden rounded-[15px] bg-white;
+    box-shadow: 0 15.826px 36.401px rgba(0, 0, 0, 0.25);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ases-persona-rail {
+    @apply hidden h-full w-5 self-stretch md:block;
+  }
+
+  .ases-persona-card-copy {
+    @apply order-2 bg-white px-6 pb-9 pt-7 sm:px-8 sm:pb-10 sm:pt-8 md:order-1 md:px-0 md:pb-[4.0625rem] md:pt-[1.875rem];
+  }
+
+  .ases-persona-copy-stack {
+    @apply flex h-full flex-col items-start;
+    width: 100%;
+  }
+
+  .ases-persona-sticker {
+    @apply inline-flex origin-center -rotate-6 items-center justify-center bg-brand-sky px-[0.42rem] py-[0.32rem] font-display font-medium leading-none text-brand-ink-blue shadow-soft;
+    margin-bottom: 0.625rem;
+    margin-left: 0.25rem;
+  }
+
+  .ases-persona-sticker span {
+    font-size: clamp(2.75rem, 8vw, 4rem);
+    letter-spacing: -0.07em;
+  }
+
+  .ases-persona-copy-block {
+    @apply flex flex-col gap-2;
+  }
+
+  .ases-persona-copy-muted {
+    @apply font-display font-light text-[1.125rem] text-black/50;
+    letter-spacing: -0.02em;
+    line-height: 1.433;
+  }
+
+  .ases-persona-copy-strong {
+    @apply font-display font-medium text-[1.5rem] text-ink;
+    letter-spacing: -0.05em;
+    line-height: 1.4;
+  }
+
+  .ases-persona-card-media {
+    @apply relative order-1 min-h-[17rem] overflow-hidden md:order-2 md:min-h-full;
+  }
+
+  .ases-persona-media-frame {
+    @apply absolute inset-0;
+  }
+
+  .ases-persona-image {
+    @apply object-cover;
+  }
+
+  @media (max-width: 767px) {
+    .ases-persona-card {
+      border-top: 0.75rem solid var(--persona-accent);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .ases-persona-card {
+      grid-template-columns: 1.25rem minmax(0, 1.08fr) minmax(19rem, 0.68fr);
+      min-height: 26.875rem;
+    }
+
+    .ases-persona-card-copy {
+      display: flex;
+      align-items: center;
+    }
+
+    .ases-persona-copy-stack {
+      max-width: none;
+    }
+
+    .ases-persona-sticker {
+      margin-bottom: 0.75rem;
+      margin-left: 2rem;
+    }
+
+    .ases-persona-copy-block {
+      width: 100%;
+      padding-inline: 2.125rem 2.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .ases-persona-card {
+      grid-template-columns: 1.25rem minmax(0, 1fr) 25.9375rem;
+    }
+
+    .ases-persona-sticker {
+      margin-left: 2.125rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .ases-persona-copy-block {
+      padding-inline: 2.25rem 2.375rem;
+    }
+  }
+
   .ases-section {
     @apply py-section;
   }

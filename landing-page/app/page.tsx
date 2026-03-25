@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/home/hero-section";
 import { PartnersSection } from "@/components/home/partners-section";
+import { PersonaSection } from "@/components/home/persona-section";
 import { SocialGallerySection } from "@/components/home/social-gallery-section";
 import { Navbar } from "@/components/navigation/navbar";
 
@@ -92,6 +93,7 @@ export default function HomePage() {
         <HeroSection />
         <SocialGallerySection />
         <PartnersSection />
+        <PersonaSection />
 
         <section className="ases-section pt-0" id="events">
           <div className="ases-container grid gap-10 xl:grid-cols-[0.7fr_1.3fr]">
