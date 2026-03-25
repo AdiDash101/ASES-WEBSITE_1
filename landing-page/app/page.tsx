@@ -1,3 +1,4 @@
+import { HeroSection } from "@/components/home/hero-section";
 import { Navbar } from "@/components/navigation/navbar";
 
 const colorTokens = [
@@ -86,80 +87,7 @@ export default function HomePage() {
       <Navbar />
 
       <main className="pb-20">
-        <section className="ases-section" id="about">
-          <div className="ases-container grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-            <div className="space-y-6">
-              <span className="ases-kicker">ASES Manila / Node 733:375</span>
-              <h1 className="ases-display max-w-[11ch]">
-                Anyone can{" "}
-                <span className="ases-emphasis -rotate-[4deg]">build,</span>
-              </h1>
-              <p className="ases-copy">
-                This pass sets the reusable foundation for the landing page in
-                Next.js and Tailwind. It is intentionally a design-system
-                sandbox, not the full homepage build.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <button className="ases-button-primary" type="button">
-                  Primary CTA
-                </button>
-                <button className="ases-button-secondary" type="button">
-                  Secondary CTA
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="ases-token-chip">App Router</span>
-                <span className="ases-token-chip">Tailwind tokens</span>
-                <span className="ases-token-chip">Figma-led palette</span>
-                <span className="ases-token-chip">Incremental build plan</span>
-              </div>
-            </div>
-
-            <aside className="ases-card relative overflow-hidden p-frame">
-              <div className="absolute inset-0 bg-brand-glow opacity-80" />
-              <div className="relative space-y-6">
-                <div className="space-y-2">
-                  <p className="font-display text-label uppercase text-brand-iris-deep">
-                    Token summary
-                  </p>
-                  <p className="max-w-[28ch] text-sm leading-6 text-ink-soft">
-                    The Figma file repeats a compact system: bold display
-                    typography, pill CTAs, rounded cards, soft floating shadows,
-                    and a restrained five-color brand palette.
-                  </p>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="ases-stat">
-                    <span className="font-display text-[2rem] leading-none tracking-display text-brand-red">
-                      5
-                    </span>
-                    <p className="text-sm text-muted">Core brand colors</p>
-                  </div>
-                  <div className="ases-stat">
-                    <span className="font-display text-[2rem] leading-none tracking-display text-brand-iris">
-                      2
-                    </span>
-                    <p className="text-sm text-muted">Primary font roles</p>
-                  </div>
-                  <div className="ases-stat">
-                    <span className="font-display text-[2rem] leading-none tracking-display text-brand-sky">
-                      3
-                    </span>
-                    <p className="text-sm text-muted">Shadow depths</p>
-                  </div>
-                  <div className="ases-stat">
-                    <span className="font-display text-[2rem] leading-none tracking-display text-brand-ink-blue">
-                      4
-                    </span>
-                    <p className="text-sm text-muted">
-                      Base semantic primitives
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </section>
+        <HeroSection />
 
         <section className="ases-section pt-0" id="events">
           <div className="ases-container grid gap-10 xl:grid-cols-[0.7fr_1.3fr]">

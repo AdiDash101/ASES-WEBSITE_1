@@ -46,8 +46,9 @@
     rgba(255, 255, 255, 0) 78%
   );
   --gradient-footer: linear-gradient(180deg, rgba(37, 30, 115, 0) 0%, #251e73 100%);
-  --pattern-canvas-grid:
-    linear-gradient(rgba(10, 42, 56, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(10, 42, 56, 0.05) 1px, transparent 1px);
+  --pattern-canvas-grid: radial-gradient(
+    circle,
+    rgba(10, 42, 56, 0.055) 0.75px,
+    transparent 0.85px
+  );
 }
-

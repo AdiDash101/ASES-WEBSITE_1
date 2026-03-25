@@ -17,12 +17,9 @@
   body {
     @apply bg-canvas font-sans text-ink;
     min-height: 100vh;
-    background-image:
-      radial-gradient(circle at top right, rgba(151, 182, 248, 0.24), transparent 26%),
-      radial-gradient(circle at bottom left, rgba(255, 44, 7, 0.08), transparent 22%),
-      var(--pattern-canvas-grid);
-    background-position: top right, bottom left, center;
-    background-size: auto, auto, 20px 20px;
+    background-image: var(--pattern-canvas-grid);
+    background-position: center;
+    background-size: 18px 18px;
   }
 
   ::selection {
@@ -50,12 +47,8 @@
 
   .ases-navbar-surface {
     background-color: rgba(255, 255, 255, 0.94);
-    background-image: radial-gradient(
-      circle,
-      rgba(10, 42, 56, 0.08) 0.75px,
-      transparent 0.75px
-    );
-    background-size: 16px 16px;
+    background-image: var(--pattern-canvas-grid);
+    background-size: 18px 18px;
     border-bottom: 1px solid rgba(10, 42, 56, 0.08);
     backdrop-filter: blur(10px);
   }
@@ -105,6 +98,257 @@
     font-weight: 500;
   }
 
+  .ases-hero {
+    @apply overflow-hidden py-7 sm:py-8 lg:py-10 xl:py-12;
+  }
+
+  .ases-hero-grid {
+    @apply grid items-center gap-7 sm:gap-8;
+  }
+
+  .ases-hero-content {
+    @apply flex w-full flex-col items-start gap-9 text-left sm:gap-9;
+  }
+
+  .ases-hero-intro {
+    @apply relative w-full;
+  }
+
+  .ases-hero-copy-block {
+    @apply space-y-6;
+    max-width: 21rem;
+    animation: hero-copy-enter 0.76s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .ases-hero-heading-lockup {
+    @apply flex flex-col items-start;
+    gap: 0.8rem;
+  }
+
+  .ases-hero-heading-word {
+    @apply whitespace-nowrap font-display font-medium leading-[0.9] tracking-[-0.065em] text-ink;
+    font-size: clamp(3rem, 12vw, 3.9rem);
+  }
+
+  .ases-hero-sticker {
+    @apply relative inline-grid whitespace-nowrap font-display font-medium leading-[0.9] tracking-[-0.075em] text-brand-ink-blue;
+    font-size: clamp(2.82rem, 11.1vw, 3.75rem);
+    transform: rotate(-6deg);
+  }
+
+  .ases-hero-sticker-frame {
+    @apply col-start-1 row-start-1 inline-flex w-max self-start justify-self-start items-center justify-center px-[0.12em] py-[0.08em] shadow-soft;
+    animation: hero-sticker-cycle 9s infinite;
+    opacity: 0;
+    transform: translateY(0.18em) scale(0.96);
+    will-change: opacity, transform;
+  }
+
+  .ases-hero-sticker-frame-build {
+    background-color: var(--color-brand-sky);
+    animation-delay: -0.6s;
+  }
+
+  .ases-hero-sticker-frame-design {
+    background-color: #40d2c8;
+    animation-delay: 2.4s;
+  }
+
+  .ases-hero-sticker-frame-scale {
+    background-color: #64dca0;
+    animation-delay: 5.4s;
+  }
+
+  .ases-hero-subcopy {
+    @apply max-w-[20.5rem] font-display font-light text-[15px] leading-[1.18] tracking-[-0.045em] text-black/50 sm:max-w-[24rem] sm:text-[16px];
+  }
+
+  .ases-hero-actions {
+    @apply flex w-full flex-wrap items-center gap-x-4 gap-y-3 sm:gap-x-5;
+    animation: hero-copy-enter 0.82s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 0.12s;
+  }
+
+  .ases-hero-cta {
+    @apply inline-flex min-h-[3.25rem] items-center justify-center gap-[10px] bg-brand-red px-5 py-[10px] font-display font-medium text-[16px] tracking-[-0.05em] text-white transition-transform duration-200 hover:-translate-y-0.5 sm:text-[18px];
+  }
+
+  .ases-hero-link {
+    @apply inline-flex min-h-[3rem] items-center justify-center py-[10px] font-display font-medium text-[16px] tracking-[-0.05em] text-ink transition-colors duration-200 hover:text-brand-iris sm:px-5 sm:text-[18px];
+  }
+
+  .ases-hero-visual {
+    @apply hidden;
+  }
+
+  .ases-hero-mascot-mobile {
+    @apply hidden;
+    animation: hero-mascot-enter 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.18s;
+    --hero-mascot-rotate: -7deg;
+  }
+
+  @media (min-width: 640px) {
+    .ases-hero-intro {
+      min-height: 14rem;
+      padding-right: 15.25rem;
+    }
+
+    .ases-hero-copy-block {
+      max-width: 20.25rem;
+    }
+
+    .ases-hero-heading-lockup {
+      gap: 0.7rem;
+    }
+
+    .ases-hero-subcopy {
+      max-width: 20.25rem;
+    }
+
+    .ases-hero-mascot-mobile {
+      @apply pointer-events-none absolute block h-auto max-w-none;
+      right: 0.5rem;
+      top: 0.35rem;
+      width: 23rem;
+      transform: rotate(-7deg);
+      transform-origin: top right;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .ases-hero-intro {
+      min-height: 15rem;
+      padding-right: 16.5rem;
+    }
+
+    .ases-hero-copy-block {
+      max-width: 22.5rem;
+    }
+
+    .ases-hero-heading-word {
+      font-size: clamp(3.35rem, 8vw, 4rem);
+    }
+
+    .ases-hero-sticker {
+      font-size: clamp(3.05rem, 7.3vw, 3.95rem);
+    }
+
+    .ases-hero-subcopy {
+      max-width: 22rem;
+      font-size: 17px;
+    }
+
+    .ases-hero-mascot-mobile {
+      right: 1rem;
+      top: -0.15rem;
+      width: 25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .ases-hero-grid {
+      grid-template-columns: minmax(0, 34.5rem) minmax(17rem, 1fr);
+      gap: 0.5rem;
+      min-height: 24rem;
+    }
+
+    .ases-hero-content {
+      max-width: 34.5rem;
+      gap: 2rem;
+    }
+
+    .ases-hero-intro {
+      min-height: 0;
+      padding-right: 0;
+    }
+
+    .ases-hero-copy-block {
+      max-width: none;
+    }
+
+    .ases-hero-heading-lockup {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: flex-end;
+      gap: 0.48rem;
+    }
+
+    .ases-hero-heading-word {
+      font-size: 3.42rem;
+    }
+
+    .ases-hero-sticker {
+      font-size: 3.28rem;
+      transform: rotate(-6deg) translateY(-0.14em);
+    }
+
+    .ases-hero-subcopy {
+      max-width: 26.25rem;
+      font-size: 17px;
+    }
+
+    .ases-hero-actions {
+      gap: 0.5rem;
+    }
+
+    .ases-hero-visual {
+      display: flex;
+      width: 100%;
+      justify-content: flex-end;
+      margin-right: -1.5rem;
+    }
+
+    .ases-hero-mascot-mobile {
+      display: none;
+    }
+
+    .ases-hero-mascot-desktop {
+      display: block;
+      height: auto;
+      width: 37rem;
+      max-width: none;
+      --hero-mascot-rotate: -2deg;
+      transform: rotate(-2deg);
+      animation: hero-mascot-enter 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: 0.2s;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .ases-hero-grid {
+      grid-template-columns: 41rem minmax(0, 1fr);
+      gap: 0;
+      min-height: 30rem;
+    }
+
+    .ases-hero-content {
+      max-width: 41rem;
+    }
+
+    .ases-hero-heading-word {
+      font-size: 4rem;
+    }
+
+    .ases-hero-sticker {
+      font-size: 4rem;
+      transform: rotate(-6deg) translateY(-0.17em);
+    }
+
+    .ases-hero-subcopy {
+      max-width: 26.75rem;
+      font-size: 18px;
+    }
+
+    .ases-hero-visual {
+      margin-right: -2.75rem;
+    }
+
+    .ases-hero-mascot-desktop {
+      width: 51rem;
+    }
+  }
+
   .ases-section {
     @apply py-section;
   }
@@ -151,5 +395,71 @@
 
   .ases-token-chip {
     @apply rounded-pill border border-line bg-white/90 px-3 py-1 text-meta text-muted;
+  }
+}
+
+@keyframes hero-sticker-cycle {
+  0% {
+    opacity: 0;
+    transform: translateY(0.18em) scale(0.95);
+  }
+
+  7%,
+  28% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  33%,
+  100% {
+    opacity: 0;
+    transform: translateY(-0.12em) scale(1.015);
+  }
+}
+
+@keyframes hero-copy-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-mascot-enter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0)
+      rotate(calc(var(--hero-mascot-rotate, -7deg) - 3deg)) scale(0.94);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(var(--hero-mascot-rotate, -7deg))
+      scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ases-hero-sticker-frame {
+    animation: none;
+    opacity: 0;
+    transform: none;
+  }
+
+  .ases-hero-copy-block,
+  .ases-hero-actions,
+  .ases-hero-mascot-mobile,
+  .ases-hero-mascot-desktop {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .ases-hero-sticker-frame-build {
+    opacity: 1;
   }
 }
