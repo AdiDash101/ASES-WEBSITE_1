@@ -803,6 +803,92 @@
     }
   }
 
+  .ases-events-section {
+    @apply py-12 sm:py-14 md:py-16 lg:py-20;
+  }
+
+  .ases-events-shell {
+    @apply flex w-full flex-col items-center gap-8 sm:gap-10 md:gap-12;
+  }
+
+  .ases-events-header {
+    @apply flex max-w-[56rem] flex-col items-center text-center;
+    gap: 0.25rem;
+  }
+
+  .ases-events-title {
+    @apply font-display font-medium text-ink;
+    font-size: clamp(2.8rem, 6.7vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  .ases-events-subtitle {
+    @apply font-display font-light text-black/60;
+    font-size: clamp(1.15rem, 2.45vw, 1.5rem);
+    line-height: 1.45;
+    letter-spacing: -0.05em;
+  }
+
+  .ases-events-grid {
+    @apply grid w-full gap-6 md:grid-cols-2 md:gap-8;
+  }
+
+  .ases-event-card {
+    @apply overflow-hidden rounded-[15px] bg-white;
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  }
+
+  .ases-event-card-media {
+    @apply relative h-52 overflow-hidden sm:h-56 md:h-60 lg:h-64;
+  }
+
+  .ases-event-card-image {
+    @apply object-cover;
+  }
+
+  .ases-event-card-overlay {
+    @apply pointer-events-none absolute inset-0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.36) 100%
+    );
+  }
+
+  .ases-event-card-body {
+    @apply flex flex-col gap-3 p-5 sm:p-6;
+  }
+
+  .ases-event-card-title {
+    @apply font-display font-medium text-ink;
+    font-size: 1.75rem;
+    line-height: 1.1;
+    letter-spacing: -0.05em;
+  }
+
+  .ases-event-card-copy {
+    @apply font-display font-light text-black/70;
+    font-size: 1rem;
+    line-height: 1.625;
+    letter-spacing: -0.02em;
+  }
+
+  .ases-events-cta {
+    @apply inline-flex items-center justify-center gap-[8.282px] bg-brand-red px-5 py-[10px] font-display font-medium text-white transition-transform duration-200 hover:-translate-y-0.5;
+    font-size: 1.5rem;
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  @media (max-width: 767px) {
+    .ases-events-header {
+      gap: 0.5rem;
+    }
+  }
+
   .ases-section {
     @apply py-section;
   }

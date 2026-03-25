@@ -1,4 +1,5 @@
 import { AboutSection } from "@/components/home/about-section";
+import { FlagshipEventsSection } from "@/components/home/flagship-events-section";
 import { HeroSection } from "@/components/home/hero-section";
 import { PartnersSection } from "@/components/home/partners-section";
 import { PersonaSection } from "@/components/home/persona-section";
@@ -96,8 +97,9 @@ export default function HomePage() {
         <PartnersSection />
         <PersonaSection />
         <AboutSection />
+        <FlagshipEventsSection />
 
-        <section className="ases-section pt-0" id="events">
+        <section className="ases-section pt-0" id="design-system">
           <div className="ases-container grid gap-10 xl:grid-cols-[0.7fr_1.3fr]">
             <div className="space-y-4">
               <span className="ases-kicker">Palette</span>
