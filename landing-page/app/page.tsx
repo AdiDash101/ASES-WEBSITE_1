@@ -7,6 +7,7 @@ import { HeroSection } from "@/components/home/hero-section";
 import { PartnersSection } from "@/components/home/partners-section";
 import { PersonaSection } from "@/components/home/persona-section";
 import { SocialGallerySection } from "@/components/home/social-gallery-section";
+import { Footer } from "@/components/navigation/footer";
 import { Navbar } from "@/components/navigation/navbar";
 
 export default function HomePage() {
@@ -14,7 +15,7 @@ export default function HomePage() {
     <>
       <Navbar />
 
-      <main className="pb-20">
+      <main>
         <HeroSection />
         <SocialGallerySection />
         <PartnersSection />
@@ -25,6 +26,8 @@ export default function HomePage() {
         <AceStoriesSection />
         <FinalCtaSection />
       </main>
+
+      <Footer />
     </>
   );
 }
