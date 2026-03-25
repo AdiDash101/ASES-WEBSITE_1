@@ -15,7 +15,7 @@ const heroEmphasisWords = [
 
 export function HeroSection() {
   return (
-    <section className="ases-hero" id="about">
+    <section className="ases-hero">
       <div className="ases-container">
         <div className="ases-hero-grid">
           <div className="ases-hero-content">
