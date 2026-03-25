@@ -1,4 +1,5 @@
 import { AboutSection } from "@/components/home/about-section";
+import { BuiltByAcesSection } from "@/components/home/built-by-aces-section";
 import { FlagshipEventsSection } from "@/components/home/flagship-events-section";
 import { HeroSection } from "@/components/home/hero-section";
 import { PartnersSection } from "@/components/home/partners-section";
@@ -98,6 +99,7 @@ export default function HomePage() {
         <PersonaSection />
         <AboutSection />
         <FlagshipEventsSection />
+        <BuiltByAcesSection />
 
         <section className="ases-section pt-0" id="design-system">
           <div className="ases-container grid gap-10 xl:grid-cols-[0.7fr_1.3fr]">

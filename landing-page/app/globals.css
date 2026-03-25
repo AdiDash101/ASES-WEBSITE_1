@@ -889,6 +889,142 @@
     }
   }
 
+  .ases-projects-section {
+    @apply py-12 sm:py-14 md:py-16 lg:py-20;
+  }
+
+  .ases-projects-shell {
+    @apply flex w-full flex-col items-center gap-10 sm:gap-12 md:gap-14;
+  }
+
+  .ases-projects-header {
+    @apply flex flex-col items-center text-center;
+    gap: 0.25rem;
+  }
+
+  .ases-projects-title {
+    @apply font-display font-medium text-ink;
+    font-size: clamp(2.8rem, 6.4vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  .ases-projects-subtitle {
+    @apply font-display font-light text-black/60;
+    font-size: clamp(1.15rem, 2.45vw, 1.5rem);
+    line-height: 1.45;
+    letter-spacing: -0.05em;
+  }
+
+  .ases-projects-grid {
+    @apply grid w-full gap-6 sm:gap-7 lg:grid-cols-2 xl:grid-cols-3 xl:gap-8;
+  }
+
+  .ases-project-card {
+    @apply flex h-full flex-col overflow-hidden rounded-[15px] bg-white;
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  }
+
+  .ases-project-card-media {
+    @apply relative h-48 overflow-hidden sm:h-52;
+  }
+
+  .ases-project-card-image {
+    @apply object-cover;
+  }
+
+  .ases-project-card-overlay {
+    @apply pointer-events-none absolute inset-0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.4) 52%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
+  }
+
+  .ases-project-chip {
+    @apply absolute right-4 top-4 inline-flex rounded-pill px-3 py-1 font-display font-light text-[12px] leading-[18px];
+    background: var(--project-chip-bg);
+    color: var(--project-chip-text);
+  }
+
+  .ases-project-card-title {
+    @apply absolute bottom-4 left-4 right-4 font-display font-medium text-white;
+    font-size: 1.5rem;
+    line-height: 1.05;
+    letter-spacing: -0.05em;
+  }
+
+  .ases-project-card-body {
+    @apply flex flex-1 flex-col gap-4 px-4 pb-4 pt-5 sm:px-6 sm:pb-5 sm:pt-6;
+  }
+
+  .ases-project-card-copy {
+    @apply font-display font-light text-black/70;
+    font-size: 0.875rem;
+    line-height: 1.625;
+    letter-spacing: -0.02em;
+  }
+
+  .ases-project-meta {
+    @apply grid grid-cols-2 gap-4;
+  }
+
+  .ases-project-meta-block {
+    @apply flex flex-col gap-1;
+  }
+
+  .ases-project-meta-block-impact {
+    @apply items-end text-right;
+  }
+
+  .ases-project-meta-label {
+    @apply font-display font-light text-black/50;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+  }
+
+  .ases-project-meta-value {
+    @apply font-display font-medium text-ink;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    letter-spacing: -0.03em;
+  }
+
+  .ases-project-meta-impact {
+    @apply font-sans font-normal;
+    color: var(--project-impact);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+  }
+
+  .ases-project-actions {
+    @apply mt-auto flex items-center justify-between gap-3 border-t border-[#f3f4f6] pt-4;
+  }
+
+  .ases-project-action {
+    @apply inline-flex items-center gap-2 font-display font-light text-black/60 transition-colors duration-200 hover:text-ink;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+  }
+
+  .ases-project-action-icon {
+    @apply h-4 w-4 shrink-0;
+  }
+
+  .ases-projects-cta {
+    @apply inline-flex items-center justify-center gap-2 bg-brand-red px-5 py-[10px] font-display font-medium text-white transition-transform duration-200 hover:-translate-y-0.5;
+    font-size: 1.5rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
   .ases-section {
     @apply py-section;
   }
