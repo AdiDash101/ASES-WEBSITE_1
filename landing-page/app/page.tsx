@@ -1,3 +1,4 @@
+import { AceStoriesSection } from "@/components/home/ace-stories-section";
 import { AboutSection } from "@/components/home/about-section";
 import { BuiltByAcesSection } from "@/components/home/built-by-aces-section";
 import { FlagshipEventsSection } from "@/components/home/flagship-events-section";
@@ -100,6 +101,7 @@ export default function HomePage() {
         <AboutSection />
         <FlagshipEventsSection />
         <BuiltByAcesSection />
+        <AceStoriesSection />
 
         <section className="ases-section pt-0" id="design-system">
           <div className="ases-container grid gap-10 xl:grid-cols-[0.7fr_1.3fr]">
