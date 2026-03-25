@@ -11,6 +11,7 @@
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
   }
 
   body {
@@ -43,20 +44,81 @@
     @apply mx-auto w-full max-w-page px-6 md:px-10 xl:px-gutter;
   }
 
+  .ases-navbar {
+    @apply sticky top-0 z-40;
+  }
+
+  .ases-navbar-surface {
+    background-color: rgba(255, 255, 255, 0.94);
+    background-image: radial-gradient(
+      circle,
+      rgba(10, 42, 56, 0.08) 0.75px,
+      transparent 0.75px
+    );
+    background-size: 16px 16px;
+    border-bottom: 1px solid rgba(10, 42, 56, 0.08);
+    backdrop-filter: blur(10px);
+  }
+
+  .ases-navbar-inner {
+    @apply ases-container flex min-h-[74px] items-center justify-between py-4 md:min-h-[92px] md:py-5;
+  }
+
+  .ases-navbar-links {
+    @apply hidden items-center md:flex;
+    column-gap: 2.588rem;
+  }
+
+  .ases-nav-link {
+    @apply font-display font-light text-[14.5px] tracking-[-0.07em] text-ink transition-colors duration-200 hover:text-brand-iris;
+  }
+
+  .ases-nav-link-cta {
+    @apply inline-flex items-center gap-2 font-display font-medium text-[14.5px] tracking-[-0.07em] text-brand-red transition-opacity duration-200 hover:opacity-80;
+  }
+
+  .ases-navbar-toggle {
+    @apply relative inline-flex h-11 w-11 items-center justify-center rounded-pill border border-line bg-white/90 shadow-soft transition-colors duration-200 hover:bg-brand-iris-soft-wash md:hidden;
+  }
+
+  .ases-navbar-toggle-line {
+    @apply absolute h-px w-5 bg-ink transition-all duration-200;
+  }
+
+  .ases-mobile-nav {
+    @apply border-t border-line md:hidden;
+    background-color: rgba(255, 255, 255, 0.96);
+  }
+
+  .ases-mobile-nav-panel {
+    @apply ases-container flex flex-col gap-3 py-4;
+  }
+
+  .ases-mobile-nav-link {
+    @apply flex items-center justify-between rounded-frame border border-line bg-white/90 px-4 py-3 font-display font-light text-label text-ink shadow-soft transition-colors duration-200 hover:bg-brand-iris-soft-wash;
+  }
+
+  .ases-mobile-nav-link-cta {
+    background-color: rgba(255, 44, 7, 0.08);
+    border-color: rgba(255, 44, 7, 0.16);
+    color: var(--color-brand-red);
+    font-weight: 500;
+  }
+
   .ases-section {
     @apply py-section;
   }
 
   .ases-kicker {
-    @apply inline-flex items-center gap-2 rounded-pill border border-line bg-white/80 px-3 py-1 font-display text-meta uppercase text-brand-red shadow-soft backdrop-blur;
+    @apply inline-flex items-center gap-2 rounded-pill border border-line bg-white/80 px-3 py-1 font-display font-medium text-meta uppercase text-brand-red shadow-soft backdrop-blur;
   }
 
   .ases-display {
-    @apply font-display text-display text-ink;
+    @apply font-display font-medium text-display text-ink;
   }
 
   .ases-heading {
-    @apply font-display text-section text-ink;
+    @apply font-display font-medium text-section text-ink;
   }
 
   .ases-copy {
@@ -64,7 +126,7 @@
   }
 
   .ases-emphasis {
-    @apply inline-flex items-center justify-center bg-brand-sky px-3 py-1 text-brand-ink-blue shadow-soft;
+    @apply inline-flex items-center justify-center bg-brand-sky px-3 py-1 font-medium text-brand-ink-blue shadow-soft;
   }
 
   .ases-card {
@@ -76,11 +138,11 @@
   }
 
   .ases-button-primary {
-    @apply inline-flex items-center gap-2 rounded-pill bg-brand-red px-5 py-3 font-display text-label text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-float;
+    @apply inline-flex items-center gap-2 rounded-pill bg-brand-red px-5 py-3 font-display font-medium text-label text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-float;
   }
 
   .ases-button-secondary {
-    @apply inline-flex items-center gap-2 rounded-pill border border-line bg-white/90 px-5 py-3 font-display text-label text-ink transition-colors duration-200 hover:bg-brand-iris-soft-wash;
+    @apply inline-flex items-center gap-2 rounded-pill border border-line bg-white/90 px-5 py-3 font-display font-medium text-label text-ink transition-colors duration-200 hover:bg-brand-iris-soft-wash;
   }
 
   .ases-stat {
@@ -91,4 +153,3 @@
     @apply rounded-pill border border-line bg-white/90 px-3 py-1 text-meta text-muted;
   }
 }
-
