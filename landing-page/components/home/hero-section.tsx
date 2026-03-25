@@ -60,7 +60,7 @@ export function HeroSection() {
                 />
               </a>
 
-              <a className="ases-hero-link" href="#events">
+              <a className="ases-hero-link" href="#socials">
                 Learn More
               </a>
             </div>
