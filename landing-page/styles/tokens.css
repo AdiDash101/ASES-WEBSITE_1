@@ -1,0 +1,53 @@
+:root {
+  --font-display: "Cocogoose Pro Trial", "Cocogoose", "Avenir Next Condensed",
+    "Arial Black", sans-serif;
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  --color-canvas: #ffffff;
+  --color-ink: #0b0b0b;
+  --color-ink-soft: rgba(0, 0, 0, 0.8);
+  --color-muted: rgba(0, 0, 0, 0.56);
+  --color-line: rgba(10, 42, 56, 0.08);
+  --color-surface: rgba(255, 255, 255, 0.88);
+  --color-surface-muted: #f3f4f6;
+
+  --color-brand-red: #ff2c07;
+  --color-brand-red-wash: rgba(255, 44, 7, 0.08);
+  --color-brand-iris: #3f439c;
+  --color-brand-deep-iris: #251e73;
+  --color-brand-pastel-iris: #97b6f8;
+  --color-brand-pastel-iris-wash: rgba(151, 182, 248, 0.18);
+  --color-brand-sky: #64b4ff;
+  --color-brand-ink-blue: #0a2a38;
+
+  --tracking-display: -0.05em;
+  --tracking-title: -0.035em;
+
+  --radius-card: 1.25rem;
+  --radius-frame: 0.9375rem;
+  --radius-button: 999px;
+
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.18);
+  --shadow-float: 0 20px 45px -18px rgba(63, 67, 156, 0.24);
+  --shadow-soft: 0 12px 30px -18px rgba(10, 42, 56, 0.18);
+
+  --space-gutter: clamp(1.5rem, 5vw, 5rem);
+  --space-section: clamp(4rem, 8vw, 7rem);
+  --space-cluster: clamp(1.5rem, 3vw, 2rem);
+  --space-frame: clamp(1.25rem, 2.2vw, 2rem);
+
+  --max-width-page: 80rem;
+  --max-width-copy: 42rem;
+
+  --gradient-brand-glow: linear-gradient(
+    145deg,
+    rgba(151, 182, 248, 0.95) 0%,
+    rgba(100, 180, 255, 0.45) 26%,
+    rgba(255, 255, 255, 0) 78%
+  );
+  --gradient-footer: linear-gradient(180deg, rgba(37, 30, 115, 0) 0%, #251e73 100%);
+  --pattern-canvas-grid:
+    linear-gradient(rgba(10, 42, 56, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 42, 56, 0.05) 1px, transparent 1px);
+}
+

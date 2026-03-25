@@ -1,0 +1,94 @@
+@import "../styles/tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at top right, rgba(151, 182, 248, 0.24), transparent 26%),
+      radial-gradient(circle at bottom left, rgba(255, 44, 7, 0.08), transparent 22%),
+      var(--pattern-canvas-grid);
+    background-position: top right, bottom left, center;
+    background-size: auto, auto, 20px 20px;
+  }
+
+  ::selection {
+    background: rgba(100, 180, 255, 0.35);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .ases-container {
+    @apply mx-auto w-full max-w-page px-6 md:px-10 xl:px-gutter;
+  }
+
+  .ases-section {
+    @apply py-section;
+  }
+
+  .ases-kicker {
+    @apply inline-flex items-center gap-2 rounded-pill border border-line bg-white/80 px-3 py-1 font-display text-meta uppercase text-brand-red shadow-soft backdrop-blur;
+  }
+
+  .ases-display {
+    @apply font-display text-display text-ink;
+  }
+
+  .ases-heading {
+    @apply font-display text-section text-ink;
+  }
+
+  .ases-copy {
+    @apply max-w-copy text-body text-muted;
+  }
+
+  .ases-emphasis {
+    @apply inline-flex items-center justify-center bg-brand-sky px-3 py-1 text-brand-ink-blue shadow-soft;
+  }
+
+  .ases-card {
+    @apply rounded-card border border-line bg-white/90 shadow-card backdrop-blur-sm;
+  }
+
+  .ases-card-soft {
+    @apply rounded-card border border-line bg-surface shadow-soft;
+  }
+
+  .ases-button-primary {
+    @apply inline-flex items-center gap-2 rounded-pill bg-brand-red px-5 py-3 font-display text-label text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-float;
+  }
+
+  .ases-button-secondary {
+    @apply inline-flex items-center gap-2 rounded-pill border border-line bg-white/90 px-5 py-3 font-display text-label text-ink transition-colors duration-200 hover:bg-brand-iris-soft-wash;
+  }
+
+  .ases-stat {
+    @apply ases-card-soft flex flex-col gap-2 px-5 py-4;
+  }
+
+  .ases-token-chip {
+    @apply rounded-pill border border-line bg-white/90 px-3 py-1 text-meta text-muted;
+  }
+}
+
