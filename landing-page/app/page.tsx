@@ -9,10 +9,12 @@ import { PersonaSection } from "@/components/home/persona-section";
 import { SocialGallerySection } from "@/components/home/social-gallery-section";
 import { Footer } from "@/components/navigation/footer";
 import { Navbar } from "@/components/navigation/navbar";
+import { PagePreloader } from "@/components/page-preloader";
 
 export default function HomePage() {
   return (
     <>
+      <PagePreloader />
       <Navbar />
 
       <main>
